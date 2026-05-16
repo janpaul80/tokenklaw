@@ -2,49 +2,107 @@
 
 ![TokenKlaw logo](https://raw.githubusercontent.com/janpaul80/tokenklaw/main/assets/logo.png)
 
-**Save tokens across AI coding agents**
+Save tokens across AI coding agents.
 
-TokenKlaw reduces duplicated prompts, repeated repo context, noisy logs, and repeated provider calls. Works with Claude Code, Codex CLI, Roo Code, Cline, Continue, Gemini tooling, and more.
+TokenKlaw is a local-first token-saving layer between your coding agent and model provider. It cuts repeated context, duplicate logs, and redundant prompts before they burn budget.
 
----
+Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
 
-## Overview • Install • Benchmarks • Platforms • Examples • Roadmap
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)](https://www.typescriptlang.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-local-003b57.svg)](https://www.sqlite.org/index.html)
+[![Node](https://img.shields.io/badge/Node-%3E%3D20-43853d.svg)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220.svg)](https://pnpm.io/)
+[![Status](https://img.shields.io/badge/status-active%20development-6f42c1.svg)](#roadmap)
 
----
+**Works with:** Claude Code, Codex CLI, Roo Code, Cline, Continue, Gemini / Antigravity, OpenClaw, KLAW, and future adapters.
 
-### What it is
-A lightweight, local‑first token‑optimization layer for AI coding tools. It deduplicates input, caches repeat requests, and reports token usage.
+## Navigation
+[Overview](#overview) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
 
-### Why it matters
-Token consumption translates directly to cost. By stripping redundancy TokenKlaw can lower token usage by **~70 %** in repeated‑context workflows, saving money and speeding up responses.
+## Overview
 
----
+TokenKlaw sits in the request path:
 
-## Before / After examples
+```text
+Agent -> TokenKlaw -> Fingerprint + Context Reduction + Cache -> Provider
+```
+
+What it does in practice:
+
+- fingerprints requests to detect repeats
+- strips noisy or duplicated context
+- caches deterministic results
+- tracks usage and savings
+
+## Before / After
+
+### 1) React rerender debugging
 
 **Without TokenKlaw**
-```
-Sure! Let me explain your React issue in detail. The component re‑renders on every state change because you create a new object inline. You can memoize the object with useMemo to avoid the extra renders.
+```text
+Sure! Let me explain your React issue in detail. The component re-renders on every state
+change because you're creating a new inline object reference each render. React compares by
+reference, so this object is always "different". Consider useMemo, stable callbacks, and
+prop drilling analysis...
 [1,280 tokens]
 ```
+
 **With TokenKlaw**
-```
-React rerender caused by inline object ref. Memoize object with useMemo.
+```text
+Rerender is caused by a new inline object ref each render.
+Fix: memoize the object with useMemo and pass stable props.
 [312 tokens]
 ```
-**Reduction:** 75 %
 
-**Another scenario**
+Saved: **75%**
+
+### 2) Auth middleware bug summary
+
+**Without TokenKlaw**
+```text
+Your middleware checks auth headers in multiple branches and logs full request objects.
+Here is a full breakdown of each branch, response mode, and error path...
+[2,050 tokens]
 ```
-Before: ████████████████████ 12,000 tokens
-After : ████ 3,480 tokens
-Saved : 71 %
+
+**With TokenKlaw**
+```text
+Duplicate auth checks in middleware.
+Consolidate to one guard, avoid full request logging, short-circuit on missing token.
+[640 tokens]
 ```
----
 
-## Install from source
+Saved: **69%**
 
-### Windows PowerShell
+### 3) Repeated repo analysis (same question, second run)
+
+**Without TokenKlaw**
+```text
+Full architecture walkthrough regenerated from scratch.
+[12,000 tokens]
+```
+
+**With TokenKlaw**
+```text
+Cache hit: previous response reused.
+[0 provider tokens]
+```
+
+Saved: **up to 100%** on repeat calls
+
+## Token chart (example repeated-context workflow)
+
+```text
+Before           ████████████████████ 12,000
+After TokenKlaw  ██████                3,480
+Saved            71%
+```
+
+## Install
+
+### From source (PowerShell)
+
 ```bash
 git clone https://github.com/janpaul80/tokenklaw.git
 cd tokenklaw
@@ -55,7 +113,8 @@ pnpm build
 pnpm doctor
 ```
 
-### WSL / Linux / macOS
+### From source (WSL / Linux / macOS)
+
 ```bash
 git clone https://github.com/janpaul80/tokenklaw.git
 cd tokenklaw
@@ -65,64 +124,131 @@ pnpm install
 pnpm build
 pnpm doctor
 ```
----
 
-## Future npm install
+### npm (coming soon)
+
 ```bash
 npm install -g tokenklaw
 ```
-*Coming soon once published to npm.*
----
 
-## Benchmarks (example repeated‑context scenarios)
-| Task | Without TokenKlaw | With TokenKlaw | Reduction |
-| ---- | ----------------: | -------------: | --------: |
-| Repeated repo analysis | 12,000 tokens | 3,480 tokens | 71 % |
-| Duplicate logs | 8,500 tokens | 4,200 tokens | 50 % |
-| Cache hit on repeat request | 6,000 tokens | 0 provider tokens | up to 100 % |
+## Benchmarks
 
-*Numbers illustrative; real savings depend on workflow.*
----
+Example repeated-context scenarios (illustrative, workflow-dependent):
 
-## Supported platforms
+| Task | Without | With TokenKlaw | Saved |
+| ---- | ------: | -------------: | ----: |
+| Repeated repo analysis | 12,000 | 3,480 | 71% |
+| Duplicate logs in debug flow | 8,500 | 4,200 | 50% |
+| Repeated stack trace explanation | 5,200 | 2,100 | 60% |
+| Cache hit on exact repeat | 6,000 | 0 provider tokens | up to 100% |
+
+## Platform support
+
 | Platform | Status |
 | -------- | ------ |
-| Claude Code | planned |
-| Codex CLI | planned |
-| Roo Code | planned |
+| Claude Code | planned |
+| Codex CLI | planned |
+| Roo Code | planned |
 | Cline | planned |
 | Continue | planned |
 | Gemini / Antigravity | planned |
 | OpenClaw | planned |
 | KLAW | planned |
----
 
-## CLI usage examples
+## CLI examples
+
+### Run
+
 ```bash
 tokenklaw run "explain this repo architecture"
-# first run – full request
-# second run – cache hit
+```
 
+```text
+provider: anthropic
+fingerprint: 4e4f2f6a...
+cache: miss
+input_tokens: 2381
+output_tokens: 1099
+estimated_cost_usd: 0.0214
+saved_tokens_estimate: 0
+```
+
+### Run again (same request)
+
+```bash
+tokenklaw run "explain this repo architecture"
+```
+
+```text
+provider: anthropic
+fingerprint: 4e4f2f6a...
+cache: hit
+input_tokens: 0 provider tokens
+output_tokens: cached
+estimated_cost_usd: 0.0000
+saved_tokens_estimate: 2381
+```
+
+### Stats
+
+```bash
 tokenklaw stats
-# shows request count, token reduction, cache‑hit rate
+```
 
+```text
+requests_total: 147
+cache_hit_rate: 42.2%
+input_tokens_baseline: 418,220
+input_tokens_actual: 161,570
+estimated_tokens_saved: 256,650
+estimated_reduction: 61.4%
+```
+
+### Inspect
+
+```bash
 tokenklaw inspect --limit 5
-# recent request records
 ```
----
 
-## Architecture (high‑level)
+```text
+#   ts                  provider   cache   input   output   saved
+1   2025-07-16T10:41Z   openai     hit     0       cached   1810
+2   2025-07-16T10:39Z   openai     miss    1810    420      0
+3   2025-07-16T10:31Z   anthropic  hit     0       cached   2381
+4   2025-07-16T10:28Z   anthropic  miss    2381    1099     0
+5   2025-07-16T10:22Z   openai     miss    1220    360      0
 ```
-Agent → TokenKlaw → Fingerprint / Context reduction / Cache → Provider
-```
----
 
-## Project status
-- Early open‑source project, monorepo layout
-- npm package forthcoming
-- Adapter skeletons in `apps/cli/src/adapters/`
-- Install from source as shown above
----
+## Architecture
+
+```text
+┌──────────────┐
+│ AI Agent     │
+└──────┬───────┘
+       │ request
+       v
+┌──────────────┐
+│ TokenKlaw    │
+│ - fingerprint│
+│ - reduction  │
+│ - cache      │
+└──────┬───────┘
+       │ optimized request
+       v
+┌──────────────┐
+│ Provider API │
+│ OpenAI / etc │
+└──────────────┘
+```
+
+## Roadmap
+
+- ship stable CLI command surface (`run`, `stats`, `inspect`)
+- expand provider adapters beyond skeleton implementations
+- publish npm package
+- add adapter-specific benchmark harness
+- harden cache invalidation + policy controls
 
 ## License
-MIT © Paul Hartmann (@janpaul80)
+
+MIT © Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
