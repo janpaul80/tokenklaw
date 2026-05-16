@@ -1,0 +1,22 @@
+{
+  "name": "@tokenklaw/cli",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "bin": {
+    "tokenklaw": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "doctor": "node dist/index.js doctor",
+    "inspect": "node dist/index.js inspect",
+    "stats": "node dist/index.js stats",
+    "proxy": "node dist/index.js proxy",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.7.0"
+  }
+}

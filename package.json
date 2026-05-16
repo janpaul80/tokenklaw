@@ -1,0 +1,19 @@
+{
+  "name": "tokenklaw",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.1.2",
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "doctor": "pnpm --filter @tokenklaw/cli doctor",
+    "inspect": "pnpm --filter @tokenklaw/cli inspect",
+    "stats": "pnpm --filter @tokenklaw/cli stats",
+    "proxy": "pnpm --filter @tokenklaw/cli proxy"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}
