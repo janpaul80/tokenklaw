@@ -42,15 +42,49 @@ pnpm doctor
 
 Expected: checks pass for Node, pnpm, SQLite driver, and schema/provider setup.
 
-## Quick smoke test
+## Activation-first flow
+
+Install into one agent:
 
 ```bash
-tokenklaw run "explain this repo architecture"
-tokenklaw run "explain this repo architecture"
-tokenklaw stats
+tokenklaw install claude
 ```
 
-The second `run` should report a cache hit.
+Install into all supported agents:
+
+```bash
+tokenklaw install all
+```
+
+Preview file writes without touching disk:
+
+```bash
+tokenklaw install claude --dry-run
+tokenklaw install all --dry-run
+```
+
+Then in your agent chat, activate TokenKlaw mode:
+
+```text
+/tokenklaw
+# alias:
+/tk
+```
+
+Disable or inspect status:
+
+```text
+/tokenklaw off
+/tokenklaw stats
+```
+
+CLI-side activation controls are also available:
+
+```bash
+tokenklaw activate on
+tokenklaw activate stats
+tokenklaw activate off
+```
 
 ## Troubleshooting
 

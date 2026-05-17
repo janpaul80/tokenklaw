@@ -18,7 +18,7 @@ Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
 **Works with:** Claude Code, Codex CLI, Roo Code, Cline, Continue, Gemini / Antigravity, OpenClaw, KLAW, and future adapters.
 
 ## Navigation
-[Overview](#overview) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
+[Overview](#overview) • [Quick Start (Activation)](#quick-start-activation-first) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
 
 ## Overview
 
@@ -97,6 +97,43 @@ Saved: **up to 100%** on repeat calls
 Before           ████████████████████ 12,000
 After TokenKlaw  ██████                3,480
 Saved            71%
+```
+
+## Quick start (activation-first)
+
+1) Install TokenKlaw locally.
+
+2) Install into your agent:
+
+```bash
+tokenklaw install claude
+# or: tokenklaw install codex|roo|cline|continue|gemini|all
+```
+
+3) Inside your agent chat, activate token-saving mode:
+
+```text
+/tokenklaw
+# alias:
+/tk
+```
+
+Expected activation response:
+
+```text
+TokenKlaw active.
+Context reduction: on
+Duplicate detection: on
+Cache guidance: on
+Verbose replies: reduced
+Token-saving mode: enabled
+```
+
+To disable or inspect mode:
+
+```text
+/tokenklaw off
+/tokenklaw stats
 ```
 
 ## Install
