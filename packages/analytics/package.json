@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
+  "dependencies": {
+    "@tokenklaw/shared": "workspace:*"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"

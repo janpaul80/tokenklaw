@@ -20,6 +20,18 @@ importers:
 
   apps/cli:
     dependencies:
+      '@tokenklaw/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
+      '@tokenklaw/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@tokenklaw/providers':
+        specifier: workspace:*
+        version: link:../../packages/providers
+      '@tokenklaw/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       better-sqlite3:
         specifier: ^8.7.0
         version: 8.7.0
@@ -34,6 +46,15 @@ importers:
 
   packages/core:
     dependencies:
+      '@tokenklaw/analytics':
+        specifier: workspace:*
+        version: link:../analytics
+      '@tokenklaw/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@tokenklaw/shared':
+        specifier: workspace:*
+        version: link:../shared
       better-sqlite3:
         specifier: ^8.1.0
         version: 8.7.0
