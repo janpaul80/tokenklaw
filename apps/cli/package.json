@@ -21,7 +21,6 @@
     "@tokenklaw/core": "workspace:*",
     "@tokenklaw/shared": "workspace:*",
     "@tokenklaw/providers": "workspace:*",
-    "@tokenklaw/analytics": "workspace:*",
-    "better-sqlite3": "^8.7.0"
+    "@tokenklaw/analytics": "workspace:*"
   }
 }
