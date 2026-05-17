@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install *)",
+      "Bash(pnpm approve-builds *)",
+      "Bash(pnpm *)",
+      "Bash(node apps/cli/dist/index.js doctor)",
+      "Bash(git status *)",
+      "Bash(node *)",
+      "Bash(git add *)",
+      "Bash(npx tsc *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

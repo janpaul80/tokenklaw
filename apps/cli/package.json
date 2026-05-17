@@ -14,9 +14,13 @@
     "inspect": "node dist/index.js inspect",
     "stats": "node dist/index.js stats",
     "proxy": "node dist/index.js proxy",
+    "run": "node dist/index.js run",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "better-sqlite3": "^8.7.0"
+    "@tokenklaw/core": "workspace:*",
+    "@tokenklaw/shared": "workspace:*",
+    "@tokenklaw/providers": "workspace:*",
+    "@tokenklaw/analytics": "workspace:*"
   }
 }

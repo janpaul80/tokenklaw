@@ -2,6 +2,13 @@
   "name": "tokenklaw",
   "version": "0.1.0",
   "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "author": "Paul Hartmann <https://github.com/janpaul80>",
+  "contributors": ["Paul Hartmann <https://github.com/janpaul80>"],
+  "license": "MIT",
+  "repository": {"type": "git","url": "git+https://github.com/janpaul80/tokenklaw.git"},
+  "homepage": "https://github.com/janpaul80/tokenklaw#readme",
+  "bugs": {"url": "https://github.com/janpaul80/tokenklaw/issues"},
   "packageManager": "pnpm@11.1.2",
   "scripts": {
     "build": "pnpm -r build",
