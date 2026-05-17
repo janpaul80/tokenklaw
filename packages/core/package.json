@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "fastify": "^4.24.0",
-    "better-sqlite3": "^8.1.0",
     "@tokenklaw/shared": "workspace:*",
     "@tokenklaw/providers": "workspace:*",
     "@tokenklaw/analytics": "workspace:*"

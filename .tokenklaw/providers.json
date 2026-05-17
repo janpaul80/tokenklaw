@@ -1,0 +1,32 @@
+[
+  {
+    "id": "local",
+    "displayName": "Local placeholder",
+    "prompt_cents_per_1k": 0,
+    "completion_cents_per_1k": 0
+  },
+  {
+    "id": "openai",
+    "displayName": "OpenAI",
+    "prompt_cents_per_1k": 1.5,
+    "completion_cents_per_1k": 6
+  },
+  {
+    "id": "anthropic",
+    "displayName": "Anthropic Claude",
+    "prompt_cents_per_1k": 0.3,
+    "completion_cents_per_1k": 1.5
+  },
+  {
+    "id": "gemini",
+    "displayName": "Google Gemini",
+    "prompt_cents_per_1k": 0.2,
+    "completion_cents_per_1k": 0.5
+  },
+  {
+    "id": "ollama",
+    "displayName": "Ollama (local model)",
+    "prompt_cents_per_1k": 0,
+    "completion_cents_per_1k": 0
+  }
+]

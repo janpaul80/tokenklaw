@@ -38,7 +38,11 @@ importers:
 
   apps/dashboard: {}
 
-  packages/analytics: {}
+  packages/analytics:
+    dependencies:
+      '@tokenklaw/shared':
+        specifier: workspace:*
+        version: link:../shared
 
   packages/cache: {}
 
@@ -55,16 +59,17 @@ importers:
       '@tokenklaw/shared':
         specifier: workspace:*
         version: link:../shared
-      better-sqlite3:
-        specifier: ^8.1.0
-        version: 8.7.0
       fastify:
         specifier: ^4.24.0
         version: 4.29.1
 
   packages/memory: {}
 
-  packages/providers: {}
+  packages/providers:
+    dependencies:
+      '@tokenklaw/shared':
+        specifier: workspace:*
+        version: link:../shared
 
   packages/shared: {}
 

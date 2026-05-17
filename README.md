@@ -101,6 +101,14 @@ Saved            71%
 
 ## Install
 
+### Requirements
+
+- **Recommended Node.js:** 20 LTS or 22 LTS
+- `pnpm` via corepack
+- On Windows, native modules may require Visual Studio Build Tools
+
+> Note: Node 24 can fail on Windows when building `better-sqlite3` from source.
+
 ### From source (PowerShell)
 
 ```bash
@@ -240,6 +248,15 @@ tokenklaw inspect --limit 5
 │ OpenAI / etc │
 └──────────────┘
 ```
+
+## Troubleshooting install issues
+
+If `pnpm install` fails on `better-sqlite3`:
+
+1. Use **Node 20 LTS** or **Node 22 LTS**
+2. Install **Visual Studio Build Tools** with **Desktop development with C++**
+3. Retry `pnpm install`
+4. If Windows native build still fails, try running in **WSL/Linux**
 
 ## Roadmap
 

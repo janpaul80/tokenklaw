@@ -2,12 +2,14 @@
 
 ## Prerequisites
 
-- Node.js 20+ (`node --version`)
+- **Recommended Node.js:** 20 LTS or 22 LTS (`node --version`)
 - Git
 - corepack (ships with modern Node)
 - Windows: PowerShell 5+  
   Linux/macOS: any POSIX shell
-- For `better-sqlite3` on Linux/macOS, you may need build tooling:
+- Node 24 may fail on Windows when `better-sqlite3` must compile from source
+- For `better-sqlite3` native builds, you may need:
+  - Windows: Visual Studio Build Tools + **Desktop development with C++**
   - Debian/Ubuntu: `build-essential libsqlite3-dev`
   - macOS: `brew install sqlite3`
 
@@ -52,8 +54,13 @@ The second `run` should report a cache hit.
 
 ## Troubleshooting
 
-- **`better-sqlite3` build errors**  
-  Install required toolchain/dev headers:
+- **`better-sqlite3` build errors on Windows**  
+  1) switch to Node 20/22 LTS  
+  2) install Visual Studio Build Tools with Desktop development with C++  
+  3) retry `pnpm install`  
+  4) if needed, use WSL/Linux
+- **`better-sqlite3` build errors on Linux/macOS**  
+  Install toolchain/dev headers:
   - Debian/Ubuntu: `sudo apt-get install build-essential libsqlite3-dev`
   - macOS: `brew install sqlite3`
 - **`pnpm` not found**  
