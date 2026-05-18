@@ -1,6 +1,8 @@
-# TokenKlaw
+<p align="center">
+  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png" alt="TokenKlaw Logo" width="220" />
+</p>
 
-![TokenKlaw logo](https://raw.githubusercontent.com/janpaul80/tokenklaw/main/assets/logo.png)
+# TokenKlaw
 
 Save tokens across AI coding agents.
 
@@ -15,10 +17,57 @@ Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220.svg)](https://pnpm.io/)
 [![Status](https://img.shields.io/badge/status-active%20development-6f42c1.svg)](#roadmap)
 
-**Works with:** Claude Code, Codex CLI, Roo Code, Cline, Continue, Gemini / Antigravity, OpenClaw, KLAW, and future adapters.
+**Works with:** Claude Code, Codex CLI, Roo Code, Cursor, Cline, Continue, Gemini / Antigravity, OpenClaw, Hermes, and future adapters.
 
 ## Navigation
-[Overview](#overview) • [Quick Start (Activation)](#quick-start-activation-first) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
+[Claude Code Integration Now Working](#claude-code-integration-now-working) • [Overview](#overview) • [Quick Start (Activation)](#quick-start-activation-first) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
+
+## Claude Code Integration Now Working
+
+TokenKlaw is now validated as a real plugin-style runtime integration inside Claude Code.
+
+Confirmed:
+- `/tokenklaw` is recognized
+- `/tk` is recognized
+- plugin-style install architecture is working
+- TokenKlaw activation mode runs inside Claude Code with clean activation behavior
+
+Activation behavior (clean final output style):
+```text
+TokenKlaw active.
+```
+
+Install flow:
+```bash
+tokenklaw install claude
+```
+
+Generated Claude plugin structure:
+```text
+~/.claude/.claude-plugin/plugin.json
+~/.claude/.claude-plugin/marketplace.json
+~/.claude/commands/tokenklaw.toml
+~/.claude/commands/tk.toml
+~/.claude/skills/tokenklaw/SKILL.md
+~/.claude/hooks/tokenklaw.pre-response.md
+~/.claude/CLAUDE.md
+~/.claude/tokenklaw/*
+```
+
+### Proof media placeholders (to be replaced with real assets)
+- `docs/media/claude-command-recognition.png` (Claude recognizes `/tokenklaw`)
+- `docs/media/claude-activation-response.png` (clean activation response)
+- `docs/media/claude-install-flow.gif` (install + activate walkthrough)
+- `docs/media/claude-plugin-tree.png` (generated plugin structure)
+
+### Product architecture direction
+
+TokenKlaw is evolving into:
+- universal runtime installer
+- plugin activation layer
+- token optimization runtime
+- context compression system
+- multi-agent activation framework
 
 ## Overview
 
@@ -189,16 +238,28 @@ Example repeated-context scenarios (illustrative, workflow-dependent):
 
 ## Platform support
 
+### Current runtime support
+
 | Platform | Status |
 | -------- | ------ |
-| Claude Code | planned |
-| Codex CLI | planned |
-| Roo Code | planned |
-| Cline | planned |
-| Continue | planned |
-| Gemini / Antigravity | planned |
-| OpenClaw | planned |
-| KLAW | planned |
+| Claude Code | working (plugin-style integration validated) |
+| Codex CLI | runtime installer implemented |
+| Roo Code | runtime installer implemented |
+| Cursor | runtime installer implemented |
+| Cline | runtime installer implemented |
+| Continue | runtime installer implemented |
+| Gemini / Antigravity | runtime installer implemented |
+| OpenClaw | runtime installer implemented |
+| Hermes | runtime installer implemented |
+
+### Future scaffold
+
+| Platform | Status |
+| -------- | ------ |
+| Windsurf | scaffold |
+| OpenCode | scaffold |
+| aider | scaffold |
+| OpenDevin-style runtimes | scaffold |
 
 ## CLI examples
 
