@@ -4,7 +4,19 @@ declare function require(name: string): any;
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-import { createServer, handleRequest, bootstrap } from '@tokenklaw/core';
+import {
+  createServer,
+  handleRequest,
+  bootstrap,
+  installActivationArtifacts,
+  installActivationArtifactsForAll,
+  listSupportedAgents,
+  setActivationState,
+  getActivationState,
+  getActivationStats,
+  formatActivationEnabledMessage,
+  formatActivationDisabledMessage,
+} from '@tokenklaw/core';
 import type { ProviderId } from '@tokenklaw/shared';
 
 declare const process: any;
@@ -20,6 +32,8 @@ function usage() {
   console.log('  inspect [--limit N]            Show recent requests');
   console.log('  stats [--since <ms>] [--until <ms>]');
   console.log('  proxy [--host <host>] [--port <port>]');
+  console.log('  install <runtime|all> [--dry-run]');
+  console.log('  activate <on|off|stats>');
 }
 
 function doctor() {
@@ -143,6 +157,71 @@ function cmdStats(args: string[]) {
   console.log(JSON.stringify(stats, null, 2));
 }
 
+function cmdInstall(args: string[]) {
+  const target = args[0];
+  const dryRun = args.includes('--dry-run');
+
+  if (!target) {
+    console.error(
+      'install requires a runtime: claude|codex|roo|cursor|cline|continue|gemini|openclaw|hermes|windsurf|opencode|aider|opendevin|all'
+    );
+    process.exit(2);
+  }
+
+  if (target === 'all') {
+    const results = installActivationArtifactsForAll({ dryRun });
+    console.log(JSON.stringify({ ok: true, dryRun, installs: results }, null, 2));
+    return;
+  }
+
+  const supported = listSupportedAgents();
+  if (!supported.includes(target as any)) {
+    console.error(`unknown agent "${target}". Supported: ${supported.join(', ')}, all`);
+    process.exit(2);
+  }
+
+  const result = installActivationArtifacts(target as any, { dryRun });
+  console.log(JSON.stringify({ ok: true, dryRun, install: result }, null, 2));
+}
+
+function cmdActivate(args: string[]) {
+  const mode = args[0];
+
+  if (!mode || !['on', 'off', 'stats'].includes(mode)) {
+    console.error('activate requires mode: on|off|stats');
+    process.exit(2);
+  }
+
+  if (mode === 'stats') {
+    const state = getActivationState(DEFAULT_DATA_DIR);
+    const stats = getActivationStats(DEFAULT_DATA_DIR);
+    console.log(
+      JSON.stringify(
+        {
+          active: state.enabled,
+          mode: state.mode,
+          context_reduction: state.enabled,
+          duplicate_detection: state.enabled,
+          cache_guidance: state.enabled,
+          verbose_replies: state.enabled ? 'reduced' : 'default',
+          token_saving_mode: state.enabled ? 'enabled' : 'disabled',
+          stats,
+        },
+        null,
+        2
+      )
+    );
+    return;
+  }
+
+  const updated = setActivationState(mode as 'on' | 'off', DEFAULT_DATA_DIR);
+  if (updated.enabled) {
+    console.log(formatActivationEnabledMessage());
+  } else {
+    console.log(formatActivationDisabledMessage());
+  }
+}
+
 async function cmdProxy(args: string[]) {
   let host = '127.0.0.1';
   let port = 9999;
@@ -176,6 +255,12 @@ switch (cmd) {
     break;
   case 'proxy':
     cmdProxy(cmdArgs);
+    break;
+  case 'install':
+    cmdInstall(cmdArgs);
+    break;
+  case 'activate':
+    cmdActivate(cmdArgs);
     break;
   default:
     usage();

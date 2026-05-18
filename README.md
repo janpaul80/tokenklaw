@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png?raw=1" alt="TokenKlaw Logo" width="220" />
+  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png" alt="TokenKlaw Logo" width="220" />
 </p>
 
 # TokenKlaw
@@ -8,7 +8,37 @@ Save tokens across AI coding agents.
 
 TokenKlaw is a local-first token-saving layer between your coding agent and model provider. It cuts repeated context, duplicate logs, and redundant prompts before they burn budget.
 
-Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
+Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))  
+Website: [token.klaw.at](https://token.klaw.at)
+
+## One-command install
+
+### macOS / Linux / WSL
+```bash
+curl -fsSL https://token.klaw.at/install.sh | bash
+```
+
+GitHub raw fallback:
+```bash
+curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash
+```
+
+### Windows PowerShell
+```powershell
+irm https://token.klaw.at/install.ps1 | iex
+```
+
+GitHub raw fallback:
+```powershell
+irm https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.ps1 | iex
+```
+
+Runtime example:
+```bash
+curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash -s -- --runtime claude
+```
+
+See full installer docs: [docs/ONE_LINE_INSTALL.md](docs/ONE_LINE_INSTALL.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)](https://www.typescriptlang.org/)

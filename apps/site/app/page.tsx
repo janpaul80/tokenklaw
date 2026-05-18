@@ -6,12 +6,15 @@ const tools = [
   "Claude Code",
   "Codex CLI",
   "Roo Code",
+  "Cursor",
   "Cline",
   "Continue",
   "Gemini / Antigravity",
   "OpenClaw",
-  "KLAW"
+  "Hermes"
 ];
+
+const futureRuntimes = ["Windsurf", "OpenCode", "aider", "OpenDevin"];
 
 const benchmarks = [
   { task: "Repeated repo analysis", without: "12,000", with: "3,480", saved: "71%" },
@@ -33,8 +36,8 @@ export default function HomePage() {
               Save tokens across AI coding agents.
             </h1>
             <p className="max-w-xl text-base leading-7 text-muted md:text-lg">
-              Install TokenKlaw, install into your agent, then activate with <code>/tokenklaw</code> or <code>/tk</code>.
-              Token-saving mode then reduces repeated context, duplicate logs, and noisy retries.
+              Install TokenKlaw, install into your runtime, then activate with <code>/tokenklaw</code> or <code>/tk</code>.
+              Claude Code now recognizes both commands through plugin-style integration, with clean activation responses and no reasoning leakage.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <a
@@ -74,13 +77,86 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Section id="tools" title="Supported tools" subtitle="Planned adapters across current and emerging AI coding environments.">
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+      <Section
+        id="claude-proof"
+        title="Works Inside Claude Code"
+        subtitle="Validated plugin-style runtime integration: command recognition + clean activation behavior."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-3 text-sm font-medium text-text">Verified command recognition</p>
+            <pre className="overflow-x-auto rounded-lg bg-black/20 p-3 text-xs text-muted">
+{`/tokenklaw  -> recognized
+/tk         -> recognized
+
+Expected clean activation:
+TokenKlaw active.`}
+            </pre>
+            <p className="mt-3 text-xs text-muted">
+              Public activation behavior is refined for final-output only responses (no internal reasoning narration).
+            </p>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-3 text-sm font-medium text-text">Claude plugin structure</p>
+            <pre className="overflow-x-auto rounded-lg bg-black/20 p-3 text-xs text-muted">
+{`~/.claude/.claude-plugin/plugin.json
+~/.claude/.claude-plugin/marketplace.json
+~/.claude/commands/tokenklaw.toml
+~/.claude/commands/tk.toml
+~/.claude/skills/tokenklaw/SKILL.md
+~/.claude/hooks/tokenklaw.pre-response.md
+~/.claude/CLAUDE.md`}
+            </pre>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        id="flow"
+        title="Install → Integrate → Activate → Save Tokens"
+        subtitle="Central activation flow across runtimes."
+      >
+        <div className="grid gap-4 md:grid-cols-4">
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-2 text-xs uppercase tracking-wide text-muted">Step 1</p>
+            <p className="text-sm font-medium text-text">Install TokenKlaw</p>
+            <p className="mt-2 text-xs text-muted">Build once locally and run the installer.</p>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-2 text-xs uppercase tracking-wide text-muted">Step 2</p>
+            <p className="text-sm font-medium text-text">Install into Claude / Roo / Cursor / others</p>
+            <p className="mt-2 text-xs text-muted">Runtime-specific installer adapters generate the right artifacts.</p>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-2 text-xs uppercase tracking-wide text-muted">Step 3</p>
+            <p className="text-sm font-medium text-text">Activate with /tokenklaw or /tk</p>
+            <p className="mt-2 text-xs text-muted">Native command path inside supported runtime UX.</p>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-2 text-xs uppercase tracking-wide text-muted">Step 4</p>
+            <p className="text-sm font-medium text-text">Token-saving mode enabled</p>
+            <p className="mt-2 text-xs text-muted">Context compression, duplicate suppression, cleaner responses.</p>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="tools" title="Supported runtimes" subtitle="Universal runtime installer architecture across current targets and future scaffolds.">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
           {tools.map((tool) => (
             <div key={tool} className="rounded-xl2 border border-line bg-panel px-4 py-3 text-sm text-text">
               {tool}
             </div>
           ))}
+        </div>
+        <div className="mt-4 rounded-xl2 border border-line bg-panel p-4">
+          <p className="text-xs uppercase tracking-wide text-muted">Future scaffold</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {futureRuntimes.map((runtime) => (
+              <span key={runtime} className="rounded-full border border-line px-3 py-1 text-xs text-text">
+                {runtime}
+              </span>
+            ))}
+          </div>
         </div>
       </Section>
 
@@ -117,32 +193,33 @@ Saved: 69%`}
         </div>
       </Section>
 
-      <Section id="install" title="Install + activate" subtitle="Activation-first flow: install TokenKlaw, install into agent, then enable token-saving mode.">
+      <Section id="install" title="One-command install" subtitle="Public install UX for macOS/Linux/WSL and Windows PowerShell.">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl2 border border-line bg-panel p-5">
-            <p className="mb-3 text-sm font-medium text-text">1) Install TokenKlaw (source)</p>
+            <p className="mb-3 text-sm font-medium text-text">macOS / Linux / WSL</p>
             <pre className="overflow-x-auto rounded-lg bg-black/20 p-3 text-xs text-muted">
-{`git clone https://github.com/janpaul80/tokenklaw.git
-cd tokenklaw
-corepack enable
-corepack prepare pnpm@latest --activate
-pnpm install
-pnpm build
-pnpm doctor`}
+{`curl -fsSL https://token.klaw.at/install.sh | bash
+
+# runtime example:
+curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash -s -- --runtime claude`}
             </pre>
           </div>
           <div className="rounded-xl2 border border-line bg-panel p-5">
-            <p className="mb-3 text-sm font-medium text-text">2) Install into agent + activate</p>
+            <p className="mb-3 text-sm font-medium text-text">Windows PowerShell</p>
             <pre className="overflow-x-auto rounded-lg bg-black/20 p-3 text-xs text-muted">
-{`tokenklaw install claude
-# or: tokenklaw install all
+{`irm https://token.klaw.at/install.ps1 | iex
 
-# inside agent chat:
-/tokenklaw
-# alias:
-/tk`}
+# runtime example:
+powershell -ExecutionPolicy Bypass -File .\\install.ps1 -Runtime claude`}
             </pre>
           </div>
+        </div>
+        <div className="mt-4 rounded-xl2 border border-line bg-panel p-5">
+          <p className="mb-2 text-sm font-medium text-text">Then activate in your agent</p>
+          <pre className="overflow-x-auto rounded-lg bg-black/20 p-3 text-xs text-muted">
+{`/tokenklaw
+/tk`}
+          </pre>
         </div>
       </Section>
 
@@ -210,16 +287,23 @@ token_saving_mode: enabled`}
         </div>
       </Section>
 
-      <Section id="media" title="Media" subtitle="Launch visuals and product demos.">
-        <div className="grid gap-4 md:grid-cols-3">
+      <Section id="media" title="Media" subtitle="Responsive placeholders for upcoming demos, recordings, and validation assets.">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-xl2 border border-line bg-panel p-6 text-sm text-text">
-            Terminal session demo (coming in launch update)
+            <p className="font-medium">MP4 Placeholder</p>
+            <p className="mt-2 text-xs text-muted">Terminal installation walkthrough recording.</p>
           </div>
           <div className="rounded-xl2 border border-line bg-panel p-6 text-sm text-text">
-            Architecture visual pack (in production)
+            <p className="font-medium">GIF Placeholder</p>
+            <p className="mt-2 text-xs text-muted">Claude Code command recognition and activation flow.</p>
           </div>
           <div className="rounded-xl2 border border-line bg-panel p-6 text-sm text-text">
-            Social preview kit for announcements
+            <p className="font-medium">PNG/JPG Placeholder</p>
+            <p className="mt-2 text-xs text-muted">Plugin structure visuals and architecture diagrams.</p>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-6 text-sm text-text">
+            <p className="font-medium">Token Comparison Placeholder</p>
+            <p className="mt-2 text-xs text-muted">Before/after token reduction and context compression charts.</p>
           </div>
         </div>
       </Section>

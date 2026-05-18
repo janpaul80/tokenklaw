@@ -6,6 +6,7 @@ import type { ProviderId, RequestRecord, CacheEntry, AggregatedStats } from '@to
 import { estimateTokens as sharedEstimateTokens, fingerprint as sharedFingerprint } from '@tokenklaw/shared';
 import { computeCost } from '@tokenklaw/analytics';
 import { createFileStorage, type FileStorage } from './storage/file';
+export * from './activation';
 
 declare const process: { env: Record<string, string | undefined> };
 declare function require(name: string): any;
