@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png" alt="TokenKlaw Logo" width="220" />
+  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png?raw=1" alt="TokenKlaw Logo" width="220" />
 </p>
 
 # TokenKlaw
