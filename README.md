@@ -272,24 +272,24 @@ Example repeated-context scenarios (illustrative, workflow-dependent):
 
 | Platform | Status |
 | -------- | ------ |
-| Claude Code | working (plugin-style integration validated) |
-| Codex CLI | runtime installer implemented |
-| Roo Code | runtime installer implemented |
-| Cursor | runtime installer implemented |
-| Cline | runtime installer implemented |
-| Continue | runtime installer implemented |
-| Gemini / Antigravity | runtime installer implemented |
-| OpenClaw | runtime installer implemented |
-| Hermes | runtime installer implemented |
+| Claude Code | working (plugin‑style integration validated) |
+| Codex CLI | experimental |
+| Roo Code | experimental |
+| Cursor | experimental |
+| Cline | experimental |
+| Continue | experimental |
+| Gemini / Antigravity | experimental |
+| OpenClaw | experimental |
+| Hermes | experimental |
 
 ### Future scaffold
 
 | Platform | Status |
 | -------- | ------ |
 | Windsurf | scaffold |
-| OpenCode | scaffold |
-| aider | scaffold |
-| OpenDevin-style runtimes | scaffold |
+| OpenDevin | scaffold |
+| Aider | scaffold |
+| Opencode | scaffold |
 
 ## CLI examples
 
@@ -355,7 +355,17 @@ tokenklaw inspect --limit 5
 5   2025-07-16T10:22Z   openai     miss    1220    360      0
 ```
 
-## Architecture
+## Screenshots
+
+| Description | Image |
+|-------------|-------|
+| Claude dropdown with full TokenKlaw command suite | ![Claude dropdown](media/claude-dropdown.png) |
+| `/tokenklaw` activation response | ![Activation response](media/activation.png) |
+| `/tokenklaw-help` command list | ![Help output](media/help.png) |
+| One‑command install (`tokenklaw install claude`) | ![Install flow](media/install.png) |
+| Full activation workflow (install → activate → dropdown) | ![Full flow](media/full-flow.gif) |
+
+
 
 ```text
 ┌──────────────┐
