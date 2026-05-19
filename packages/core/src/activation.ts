@@ -617,11 +617,53 @@ Use this skill to apply token-saving response behavior.
 Return only final user-facing responses.
 Do not output internal reasoning, analysis traces, or self-explanations.
 
-## Commands and exact outputs
-- /tokenklaw  -> TokenKlaw active.
-- /tk         -> TokenKlaw active.
-- /tokenklaw off -> TokenKlaw inactive.
-- /tokenklaw stats -> compact status block only.
+## Commands and exact outputs (final-output-only)
+- /tokenklaw  ->
+  TokenKlaw active.
+  Context reduction: on
+  Duplicate detection: on
+  Cache guidance: on
+  Verbose replies: reduced
+  Token-saving mode: enabled
+
+- /tk ->
+  TokenKlaw active.
+  Context reduction: on
+  Duplicate detection: on
+  Cache guidance: on
+  Verbose replies: reduced
+  Token-saving mode: enabled
+
+- /tokenklaw-off ->
+  TokenKlaw inactive.
+  Context reduction: off
+  Duplicate detection: off
+  Cache guidance: off
+  Verbose replies: normal
+  Token-saving mode: disabled
+
+- /tokenklaw-help ->
+  /tokenklaw        Activate token-saving mode
+  /tk               Alias of /tokenklaw
+  /tokenklaw-off    Disable token-saving mode
+  /tokenklaw-help   Show this help table
+
+- /tokenklaw off -> (compat alias)
+  TokenKlaw inactive.
+  Context reduction: off
+  Duplicate detection: off
+  Cache guidance: off
+  Verbose replies: normal
+  Token-saving mode: disabled
+
+- /tokenklaw stats -> compact status block only
+
+## Upstream provider failure handling
+If the host runtime reports upstream provider failures (for example HTTP 402, quota/billing/rate-limit, or transient 5xx):
+- do not add extra reasoning text
+- keep response deterministic and concise
+- prefer returning the exact local command output blocks above for simple command invocations
+- mention only one short line when needed: "Upstream provider error in host runtime (not TokenKlaw install)."
 
 ## Behavior when active
 - concise technical replies
@@ -642,6 +684,13 @@ When TokenKlaw is active:
 - keep commands, file paths, and code exact
 - never expose hidden reasoning or internal analysis
 - return final output text only
+
+Simple command fallback policy:
+- For /tokenklaw and /tk, return deterministic activation block directly.
+- For /tokenklaw-off (or /tokenklaw off), return deterministic inactive block directly.
+- For /tokenklaw-help, return only short command table.
+- If host runtime surfaces upstream provider errors (402/429/5xx), do not worsen UX with extra narration.
+- Prefer local/final-output-only command response whenever command intent is activation/help/off.
 `,
     });
 
@@ -654,12 +703,38 @@ TokenKlaw provides a token optimization activation layer.
 ## Intended commands
 - /tokenklaw
 - /tk
-- /tokenklaw off
+- /tokenklaw-help
+- /tokenklaw-off
+- /tokenklaw off (compat alias)
 - /tokenklaw stats
 
 ## Response discipline
 For command activations, output final responses only.
 Never expose chain-of-thought, hidden analysis, or internal narration.
+
+## Deterministic local command outputs
+Use these exact outputs for simple activation commands:
+- /tokenklaw and /tk:
+  TokenKlaw active.
+  Context reduction: on
+  Duplicate detection: on
+  Cache guidance: on
+  Verbose replies: reduced
+  Token-saving mode: enabled
+
+- /tokenklaw-off (and /tokenklaw off alias):
+  TokenKlaw inactive.
+  Context reduction: off
+  Duplicate detection: off
+  Cache guidance: off
+  Verbose replies: normal
+  Token-saving mode: disabled
+
+- /tokenklaw-help:
+  /tokenklaw        Activate token-saving mode
+  /tk               Alias of /tokenklaw
+  /tokenklaw-off    Disable token-saving mode
+  /tokenklaw-help   Show this help table
 
 ## Compatibility handling
 If another mode (e.g., Caveman) is detected, prefer compatibility phrasing:
@@ -668,6 +743,11 @@ If another mode (e.g., Caveman) is detected, prefer compatibility phrasing:
 ## Capability honesty
 Custom slash command support may depend on Claude runtime/plugin behavior.
 If commands are not recognized, verify plugin discovery/registration rules.
+
+## Upstream error clarification
+If host runtime shows API errors such as HTTP 402, treat as upstream provider billing/quota/rate-limit issue.
+This is not a TokenKlaw installer/manifest load failure when commands are recognized.
+For recordings, keep command responses lightweight and deterministic as above.
 `,
     });
 
@@ -951,7 +1031,7 @@ export function formatActivationDisabledMessage(): string {
     'Context reduction: off',
     'Duplicate detection: off',
     'Cache guidance: off',
-    'Verbose replies: default',
+    'Verbose replies: normal',
     'Token-saving mode: disabled',
   ].join('\n');
 }

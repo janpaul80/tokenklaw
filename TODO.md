@@ -1,68 +1,19 @@
-# TokenKlaw Universal Runtime Installer TODO
+# TokenKlaw Command Reliability TODO
 
-- [ ] Refactor `packages/core/src/activation.ts` into universal runtime installer architecture
-- [ ] Add supported runtime IDs:
-  - [ ] claude
-  - [ ] codex
-  - [ ] roo
-  - [ ] cursor
-  - [ ] cline
-  - [ ] continue
-  - [ ] gemini
-  - [ ] openclaw
-  - [ ] hermes
-- [ ] Add future scaffold runtime IDs:
-  - [ ] windsurf
-  - [ ] opencode
-  - [ ] aider
-  - [ ] opendevin
-- [ ] Implement runtime capability metadata:
-  - [ ] supportsCustomSlashCommands
-  - [ ] activationMechanism
-  - [ ] installTarget
-  - [ ] status
-  - [ ] notes
-- [ ] Implement installer adapter interface and registry
-- [ ] Implement installer adapters:
-  - [ ] ClaudePluginInstaller
-  - [ ] CodexInstaller
-  - [ ] RooInstaller
-  - [ ] CursorInstaller
-  - [ ] ClineInstaller
-  - [ ] ContinueInstaller
-  - [ ] GeminiInstaller
-  - [ ] OpenClawInstaller
-  - [ ] HermesInstaller
-- [ ] Add scaffold installers for:
-  - [ ] windsurf
-  - [ ] opencode
-  - [ ] aider
-  - [ ] opendevin
-- [ ] Implement Claude plugin-style artifact generation for `tokenklaw install claude`:
-  - [ ] `.claude-plugin/plugin.json`
-  - [ ] `.claude-plugin/marketplace.json`
-  - [ ] `commands/tokenklaw.toml`
-  - [ ] `commands/tk.toml`
-  - [ ] `skills/tokenklaw/SKILL.md`
-  - [ ] hooks scaffold (if needed)
-  - [ ] `CLAUDE.md`
-  - [ ] compatibility docs
-- [ ] Update CLI in `apps/cli/src/index.ts`:
-  - [ ] help text for runtime list
-  - [ ] install validation list
-- [ ] Build and validate:
+- [ ] Inspect command artifact generation in `packages/core/src/activation.ts` for `/tokenklaw`, `/tk`, `/tokenklaw-help`, `/tokenklaw-off`
+- [ ] Implement deterministic local/static command responses in Claude artifacts (no upstream dependency for simple commands)
+- [ ] Add provider-failure fallback wording for upstream 402/5xx conditions in Claude skill/hook/docs artifacts
+- [ ] Align off-command verbose wording to expected output (`normal` instead of `default`)
+- [ ] Update README/docs with clear note: command recognition is local/plugin-based; upstream billing/quota errors may still occur in host runtime
+- [ ] Build and test:
   - [ ] `pnpm -r build`
-  - [ ] `tokenklaw install claude --dry-run`
-  - [ ] `tokenklaw install claude`
-  - [ ] verify generated Claude plugin structure
-  - [ ] verify `/tokenklaw` and `/tk` behavior in Claude Code
-- [ ] Capture delivery artifacts:
+  - [ ] `node apps/cli/dist/index.js install claude --dry-run`
+  - [ ] `node apps/cli/dist/index.js install claude`
+  - [ ] Verify generated Claude files contain static deterministic responses
+- [ ] Capture outputs:
+  - [ ] root-cause confirmation
   - [ ] files changed
-  - [ ] generated Claude plugin tree
-  - [ ] sample `plugin.json`
-  - [ ] sample `tokenklaw.toml`
-  - [ ] sample `SKILL.md`
-  - [ ] build output
-  - [ ] Claude Code test result
+  - [ ] test output
   - [ ] commit hash
   - [ ] push output
+  - [ ] safe-to-record decision
