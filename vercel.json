@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/site/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/install.ps1",
+      "dest": "apps/site/public/install.ps1"
+    },
+    {
+      "src": "/install.sh",
+      "dest": "apps/site/public/install.sh"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "apps/site/$1"
+    }
+  ]
+}
