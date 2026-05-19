@@ -543,6 +543,69 @@ description = "Alias for /tokenklaw"
 alias_of = "tokenklaw"
 `,
     });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-help.toml')),
+      content: `[command]
+name = "tokenklaw-help"
+description = "Show TokenKlaw command help"
+
+[command.behavior]
+activation = "help"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-stats.toml')),
+      content: `[command]
+name = "tokenklaw-stats"
+description = "Show current TokenKlaw session and token-saving status"
+
+[command.behavior]
+activation = "stats"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-off.toml')),
+      content: `[command]
+name = "tokenklaw-off"
+description = "Disable TokenKlaw mode for the current session"
+
+[command.behavior]
+activation = "disable"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-compress.toml')),
+      content: `[command]
+name = "tokenklaw-compress"
+description = "Compress repeated logs, stack traces, or long context into a shorter technical summary"
+
+[command.behavior]
+activation = "compress"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-review.toml')),
+      content: `[command]
+name = "tokenklaw-review"
+description = "Review the current response or context for token waste and suggest a shorter version"
+
+[command.behavior]
+activation = "review"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-cache.toml')),
+      content: `[command]
+name = "tokenklaw-cache"
+description = "Show cache guidance and repeated prompt behavior"
+
+[command.behavior]
+activation = "cache"`,
+    });
+    files.push({
+      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-agent.toml')),
+      content: `[command]
+name = "tokenklaw-agent"
+description = "Show supported runtime integrations and their current status"
+
+[command.behavior]
+activation = "agent"`,
+    });
 
     files.push({
       name: path.relative(this.baseDir, path.join(skillDir, 'SKILL.md')),
