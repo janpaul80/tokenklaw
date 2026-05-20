@@ -494,9 +494,24 @@ class ClaudePluginInstaller extends BaseRuntimeInstaller {
           author: 'TokenKlaw',
           homepage: 'https://token.klaw.at',
           entrypoints: {
-            commands: ['tokenklaw', 'tk'],
+            commands: [
+              'tokenklaw',
+              'tk',
+              'tokenklaw-help',
+              'tokenklaw-off',
+              'tokenklaw-stats',
+              'tokenklaw-compress',
+              'tokenklaw-review',
+              'tokenklaw-cache',
+              'tokenklaw-agent',
+            ],
             skills: ['tokenklaw'],
-            hooks: ['pre-response'],
+            hooks: [
+              {
+                event: 'pre-response',
+                handler: 'hooks/tokenklaw.pre-response.cjs',
+              },
+            ],
           },
         },
         null,
@@ -674,10 +689,102 @@ If the host runtime reports upstream provider failures (for example HTTP 402, qu
     });
 
     files.push({
-      name: path.relative(this.baseDir, path.join(hooksDir, 'tokenklaw.pre-response.md')),
-      content: `# TokenKlaw Hook: pre-response
+      name: path.relative(this.baseDir, path.join(hooksDir, 'tokenklaw.pre-response.cjs')),
+      content: `'use strict';
 
-When TokenKlaw is active:
+/**
+ * TokenKlaw pre-response hook (CommonJS, dependency-free).
+ * - Safe on missing stdin/input
+ * - Never throws intentionally
+ * - Emits no error output during normal operation
+ * - Pass-through behavior to avoid altering successful activation responses
+ */
+
+function safeParseJson(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  try {
+    return JSON.parse(raw);
+  } catch (_) {
+    return null;
+  }
+}
+
+function readStdin(callback) {
+  let data = '';
+  try {
+    if (process.stdin && typeof process.stdin.setEncoding === 'function') {
+      process.stdin.setEncoding('utf8');
+    }
+    process.stdin.on('data', function (chunk) {
+      data += chunk || '';
+    });
+    process.stdin.on('end', function () {
+      callback(data);
+    });
+    process.stdin.on('error', function () {
+      callback('');
+    });
+    if (process.stdin && typeof process.stdin.resume === 'function') {
+      process.stdin.resume();
+    } else {
+      callback('');
+    }
+  } catch (_) {
+    callback('');
+  }
+}
+
+function writeOutput(payload) {
+  try {
+    if (typeof payload === 'string') {
+      process.stdout.write(payload);
+      return;
+    }
+    process.stdout.write(JSON.stringify(payload));
+  } catch (_) {
+    // Intentionally swallow to keep hook non-blocking and quiet.
+  }
+}
+
+function passthrough(raw) {
+  const parsed = safeParseJson(raw);
+  if (parsed !== null) {
+    writeOutput(parsed);
+    return;
+  }
+  writeOutput(raw || '');
+}
+
+(function main() {
+  try {
+    readStdin(function (raw) {
+      try {
+        passthrough(raw);
+      } catch (_) {
+        writeOutput(raw || '');
+      }
+    });
+  } catch (_) {
+    // Hard-fail safe: silent, clean exit.
+  }
+})();
+
+module.exports = {
+  safeParseJson: safeParseJson,
+};
+`,
+    });
+
+    files.push({
+      name: path.relative(this.baseDir, path.join(hooksDir, 'tokenklaw.pre-response.md')),
+      content: `# TokenKlaw Hook: pre-response (documentation)
+
+This markdown file is documentation-only.
+
+Executable hook artifact:
+- \`hooks/tokenklaw.pre-response.cjs\`
+
+Behavior goals:
 - reduce verbosity
 - remove duplicate repeated context
 - summarize logs by highest-signal lines

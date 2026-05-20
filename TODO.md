@@ -1,19 +1,26 @@
-# TokenKlaw Command Reliability TODO
+# TokenKlaw Hook Loader Fix TODO
 
-- [ ] Inspect command artifact generation in `packages/core/src/activation.ts` for `/tokenklaw`, `/tk`, `/tokenklaw-help`, `/tokenklaw-off`
-- [ ] Implement deterministic local/static command responses in Claude artifacts (no upstream dependency for simple commands)
-- [ ] Add provider-failure fallback wording for upstream 402/5xx conditions in Claude skill/hook/docs artifacts
-- [ ] Align off-command verbose wording to expected output (`normal` instead of `default`)
-- [ ] Update README/docs with clear note: command recognition is local/plugin-based; upstream billing/quota errors may still occur in host runtime
+- [x] Inspect Claude hook artifact generation in `packages/core/src/activation.ts`
+- [ ] Generate executable CommonJS hook artifact: `hooks/tokenklaw.pre-response.cjs`
+- [ ] Keep markdown hook artifact: `hooks/tokenklaw.pre-response.md` (documentation-only)
+- [ ] Ensure plugin/hook registration points to executable hook artifact
+- [ ] Ensure hook script is dependency-free, CommonJS-only, safe on missing stdin/input, and never throws
+- [ ] Preserve current `/tokenklaw` deterministic activation output exactly
 - [ ] Build and test:
-  - [ ] `pnpm -r build`
-  - [ ] `node apps/cli/dist/index.js install claude --dry-run`
+  - [ ] `pnpm --filter @tokenklaw/core build`
+  - [ ] `pnpm --filter @tokenklaw/cli build`
   - [ ] `node apps/cli/dist/index.js install claude`
-  - [ ] Verify generated Claude files contain static deterministic responses
+- [ ] Runtime verification in Claude Code:
+  - [ ] `/tokenklaw`
+  - [ ] `/tk`
+  - [ ] `/tokenklaw-help`
+  - [ ] `/tokenklaw-off`
+  - [ ] Confirm no `UserPromptSubmit` hook error and no CJS loader error
 - [ ] Capture outputs:
-  - [ ] root-cause confirmation
   - [ ] files changed
-  - [ ] test output
+  - [ ] generated hook excerpt
+  - [ ] install output
+  - [ ] Claude runtime test result
   - [ ] commit hash
   - [ ] push output
-  - [ ] safe-to-record decision
+  - [ ] final safe-to-record decision
