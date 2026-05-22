@@ -20,7 +20,7 @@ export function Footer() {
         <div className="space-y-2">
           <div className="inline-flex items-center">
             <Image
-              src="/tokenklaw2-logo.png"
+              src="/tokenklaw-logo.png"
               alt="TokenKlaw"
               width={96}
               height={96}
