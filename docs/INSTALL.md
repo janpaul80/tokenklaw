@@ -71,6 +71,15 @@ Then in your agent chat, activate TokenKlaw mode:
 /tk
 ```
 
+Claude Code installs current-runtime artifacts:
+- Markdown command files in `~/.claude/commands`
+- a silent CommonJS hook in `~/.claude/hooks/tokenklaw.pre-response.cjs`
+- a `UserPromptExpansion` hook entry in `~/.claude/settings.json`
+- a PowerShell statusline script in `~/.claude/hooks/tokenklaw-statusline.ps1`
+
+The four core demo commands (`/tokenklaw`, `/tk`, `/tokenklaw-help`, `/tokenklaw-off`) are intercepted before model expansion so recordings do not depend on model phrasing.
+When active, the Claude statusline prints `[TOKENKLAW]`. `/tokenklaw-off` writes inactive state so the badge disappears, and `/tokenklaw-stats` reports active/inactive plus statusline state.
+
 Disable or inspect status:
 
 ```text

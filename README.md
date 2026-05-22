@@ -1,203 +1,33 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw2-logo.png" alt="TokenKlaw Logo" width="220" />
+  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw-logo.png" alt="TokenKlaw logo" width="220" />
 </p>
 
 # TokenKlaw
 
-Save tokens across AI coding agents.
+TokenKlaw is a production-first activation and token-optimization layer for AI coding agents and workspaces.
 
-TokenKlaw is a local-first token-saving layer between your coding agent and model provider. It cuts repeated context, duplicate logs, and redundant prompts before they burn budget.
+It gives coding-agent runtimes a consistent way to activate token-saving behavior, suppress noisy output, reduce repeated context, and surface clear runtime state. The current hardened integration is focused on Claude Code, with scaffolds for additional runtimes such as Codex CLI, Roo Code, Cursor, Cline, Continue, Gemini, OpenClaw, Hermes, Windsurf, OpenCode, aider, and OpenDevin-style environments.
 
-Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))  
-Website: [token.klaw.at](https://token.klaw.at)
+Website: [token.klaw.at](https://token.klaw.at)  
+Repository: [github.com/janpaul80/tokenklaw](https://github.com/janpaul80/tokenklaw)  
+Created by Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
 
-## One-command install
+## Current Production Status
 
-### macOS / Linux / WSL
-```bash
-curl -fsSL https://token.klaw.at/install.sh | bash
-```
+Claude Code activation has been validated in the real runtime, not only in local builds.
 
-GitHub raw fallback:
-```bash
-curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash
-```
+Confirmed Claude Code behavior:
 
-### Windows PowerShell
-```powershell
-irm https://token.klaw.at/install.ps1 | iex
-```
+- `/tokenklaw` activates TokenKlaw.
+- `/tk` is an alias for `/tokenklaw`.
+- `/tokenklaw-help` displays the command table.
+- `/tokenklaw-off` deactivates TokenKlaw.
+- `/tokenklaw-stats` reports active/inactive state and statusline state.
+- Active sessions show `[TOKENKLAW]` in the Claude Code statusline.
+- Core demo commands are intercepted by a `UserPromptExpansion` hook before model expansion, which keeps activation output deterministic and final-output-only.
+- Legacy `.toml` Claude command files are removed during install and replaced with Claude-native Markdown command files.
 
-GitHub raw fallback:
-```powershell
-irm https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.ps1 | iex
-```
-
-Runtime example:
-```bash
-curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash -s -- --runtime claude
-```
-
-See full installer docs: [docs/ONE_LINE_INSTALL.md](docs/ONE_LINE_INSTALL.md)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6.svg)](https://www.typescriptlang.org/)
-[![SQLite](https://img.shields.io/badge/SQLite-local-003b57.svg)](https://www.sqlite.org/index.html)
-[![Node](https://img.shields.io/badge/Node-%3E%3D20-43853d.svg)](https://nodejs.org/)
-[![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220.svg)](https://pnpm.io/)
-[![Status](https://img.shields.io/badge/status-active%20development-6f42c1.svg)](#roadmap)
-
-**Works with:** Claude Code, Codex CLI, Roo Code, Cursor, Cline, Continue, Gemini / Antigravity, OpenClaw, Hermes, and future adapters.
-
-## Navigation
-[Claude Code Integration Now Working](#claude-code-integration-now-working) • [Overview](#overview) • [Quick Start (Activation)](#quick-start-activation-first) • [Install](#install) • [Benchmarks](#benchmarks) • [Platforms](#platform-support) • [CLI Examples](#cli-examples) • [Roadmap](#roadmap)
-
-## Claude Code Integration Now Working
-
-TokenKlaw is now validated as a real plugin-style runtime integration inside Claude Code.
-
-Confirmed:
-- `/tokenklaw` is recognized
-- `/tk` is recognized
-- plugin-style install architecture is working
-- TokenKlaw activation mode runs inside Claude Code with clean activation behavior
-
-Activation behavior (clean final output style):
-```text
-TokenKlaw active.
-```
-
-Install flow:
-```bash
-tokenklaw install claude
-```
-
-Generated Claude plugin structure:
-```text
-~/.claude/.claude-plugin/plugin.json
-~/.claude/.claude-plugin/marketplace.json
-~/.claude/commands/tokenklaw.toml
-~/.claude/commands/tk.toml
-~/.claude/skills/tokenklaw/SKILL.md
-~/.claude/hooks/tokenklaw.pre-response.md
-~/.claude/CLAUDE.md
-~/.claude/tokenklaw/*
-```
-
-### Proof media placeholders (to be replaced with real assets)
-- `docs/media/claude-command-recognition.png` (Claude recognizes `/tokenklaw`)
-- `docs/media/claude-activation-response.png` (clean activation response)
-- `docs/media/claude-install-flow.gif` (install + activate walkthrough)
-- `docs/media/claude-plugin-tree.png` (generated plugin structure)
-
-### Product architecture direction
-
-TokenKlaw is evolving into:
-- universal runtime installer
-- plugin activation layer
-- token optimization runtime
-- context compression system
-- multi-agent activation framework
-
-## Overview
-
-TokenKlaw sits in the request path:
-
-```text
-Agent -> TokenKlaw -> Fingerprint + Context Reduction + Cache -> Provider
-```
-
-What it does in practice:
-
-- fingerprints requests to detect repeats
-- strips noisy or duplicated context
-- caches deterministic results
-- tracks usage and savings
-
-## Before / After
-
-### 1) React rerender debugging
-
-**Without TokenKlaw**
-```text
-Sure! Let me explain your React issue in detail. The component re-renders on every state
-change because you're creating a new inline object reference each render. React compares by
-reference, so this object is always "different". Consider useMemo, stable callbacks, and
-prop drilling analysis...
-[1,280 tokens]
-```
-
-**With TokenKlaw**
-```text
-Rerender is caused by a new inline object ref each render.
-Fix: memoize the object with useMemo and pass stable props.
-[312 tokens]
-```
-
-Saved: **75%**
-
-### 2) Auth middleware bug summary
-
-**Without TokenKlaw**
-```text
-Your middleware checks auth headers in multiple branches and logs full request objects.
-Here is a full breakdown of each branch, response mode, and error path...
-[2,050 tokens]
-```
-
-**With TokenKlaw**
-```text
-Duplicate auth checks in middleware.
-Consolidate to one guard, avoid full request logging, short-circuit on missing token.
-[640 tokens]
-```
-
-Saved: **69%**
-
-### 3) Repeated repo analysis (same question, second run)
-
-**Without TokenKlaw**
-```text
-Full architecture walkthrough regenerated from scratch.
-[12,000 tokens]
-```
-
-**With TokenKlaw**
-```text
-Cache hit: previous response reused.
-[0 provider tokens]
-```
-
-Saved: **up to 100%** on repeat calls
-
-## Token chart (example repeated-context workflow)
-
-```text
-Before           ████████████████████ 12,000
-After TokenKlaw  ██████                3,480
-Saved            71%
-```
-
-## Quick start (activation-first)
-
-1) Install TokenKlaw locally.
-
-2) Install into your agent:
-
-```bash
-tokenklaw install claude
-# or: tokenklaw install codex|roo|cline|continue|gemini|all
-```
-
-3) Inside your agent chat, activate token-saving mode:
-
-```text
-/tokenklaw
-# alias:
-/tk
-```
-
-Expected activation response:
+Expected activation output:
 
 ```text
 TokenKlaw active.
@@ -208,36 +38,75 @@ Verbose replies: reduced
 Token-saving mode: enabled
 ```
 
-To disable or inspect mode:
+Expected visible runtime badge when active:
 
 ```text
-/tokenklaw off
-/tokenklaw stats
+[TOKENKLAW]
 ```
 
-## Install
+## What TokenKlaw Does
+
+TokenKlaw is designed to sit beside AI coding agents as a runtime activation and optimization layer.
+
+Core responsibilities:
+
+- Runtime activation: provides reliable commands for turning token-saving behavior on and off.
+- Context discipline: encourages concise, high-signal answers while preserving technical correctness.
+- Duplicate suppression: reduces repeated prompt, log, and stack-trace expansion.
+- Cache guidance: tracks repeated requests and exposes cache-oriented behavior through CLI/runtime surfaces.
+- Status visibility: shows a clear active-state badge so users can trust the runtime is actually enabled.
+- Cross-agent scaffolding: generates runtime-specific artifacts for multiple coding-agent environments.
+
+## One-Line Install
+
+### macOS, Linux, and WSL
+
+```bash
+curl -fsSL https://token.klaw.at/install.sh | bash
+```
+
+GitHub raw fallback:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash
+```
+
+Install for Claude Code directly:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.sh | bash -s -- --runtime claude
+```
+
+### Windows PowerShell
+
+```powershell
+irm https://token.klaw.at/install.ps1 | iex
+```
+
+GitHub raw fallback:
+
+```powershell
+irm https://raw.githubusercontent.com/janpaul80/tokenklaw/main/install.ps1 | iex
+```
+
+If running from a cloned repository:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Runtime claude
+```
+
+## Install From Source
 
 ### Requirements
 
-- **Recommended Node.js:** 20 LTS or 22 LTS
-- `pnpm` via corepack
-- On Windows, native modules may require Visual Studio Build Tools
+- Node.js 20 LTS or 22 LTS recommended.
+- `pnpm` via Corepack.
+- Git.
+- Windows users may need Visual Studio Build Tools if native dependencies are rebuilt.
 
-> Note: Node 24 can fail on Windows when building `better-sqlite3` from source.
+> Node 24 can be problematic on Windows when native packages need to compile from source. Use Node 20 or 22 LTS for the most predictable install path.
 
-### From source (PowerShell)
-
-```bash
-git clone https://github.com/janpaul80/tokenklaw.git
-cd tokenklaw
-corepack enable
-corepack prepare pnpm@latest --activate
-pnpm install
-pnpm build
-pnpm doctor
-```
-
-### From source (WSL / Linux / macOS)
+### Clone, install, and build
 
 ```bash
 git clone https://github.com/janpaul80/tokenklaw.git
@@ -249,161 +118,185 @@ pnpm build
 pnpm doctor
 ```
 
-### npm (coming soon)
+## Install Into a Runtime
+
+Install into Claude Code:
 
 ```bash
-npm install -g tokenklaw
+tokenklaw install claude
 ```
 
-## Benchmarks
-
-Example repeated-context scenarios (illustrative, workflow-dependent):
-
-| Task | Without | With TokenKlaw | Saved |
-| ---- | ------: | -------------: | ----: |
-| Repeated repo analysis | 12,000 | 3,480 | 71% |
-| Duplicate logs in debug flow | 8,500 | 4,200 | 50% |
-| Repeated stack trace explanation | 5,200 | 2,100 | 60% |
-| Cache hit on exact repeat | 6,000 | 0 provider tokens | up to 100% |
-
-## Platform support
-
-### Current runtime support
-
-| Platform | Status |
-| -------- | ------ |
-| Claude Code | working (plugin‑style integration validated) |
-| Codex CLI | experimental |
-| Roo Code | experimental |
-| Cursor | experimental |
-| Cline | experimental |
-| Continue | experimental |
-| Gemini / Antigravity | experimental |
-| OpenClaw | experimental |
-| Hermes | experimental |
-
-### Future scaffold
-
-| Platform | Status |
-| -------- | ------ |
-| Windsurf | scaffold |
-| OpenDevin | scaffold |
-| Aider | scaffold |
-| Opencode | scaffold |
-
-## CLI examples
-
-### Run
+Install into all supported/scaffolded runtimes:
 
 ```bash
-tokenklaw run "explain this repo architecture"
+tokenklaw install all
 ```
+
+Preview what would be written without touching runtime files:
+
+```bash
+tokenklaw install claude --dry-run
+tokenklaw install all --dry-run
+```
+
+## Claude Code Runtime Integration
+
+TokenKlaw writes the following Claude Code artifacts:
 
 ```text
-provider: anthropic
-fingerprint: 4e4f2f6a...
-cache: miss
-input_tokens: 2381
-output_tokens: 1099
-estimated_cost_usd: 0.0214
-saved_tokens_estimate: 0
+~/.claude/.claude-plugin/plugin.json
+~/.claude/.claude-plugin/marketplace.json
+~/.claude/commands/tokenklaw.md
+~/.claude/commands/tk.md
+~/.claude/commands/tokenklaw-help.md
+~/.claude/commands/tokenklaw-off.md
+~/.claude/commands/tokenklaw-stats.md
+~/.claude/skills/tokenklaw/SKILL.md
+~/.claude/hooks/hooks.json
+~/.claude/hooks/tokenklaw.pre-response.cjs
+~/.claude/hooks/tokenklaw-statusline.ps1
+~/.claude/hooks/tokenklaw.pre-response.md
+~/.claude/settings.json
+~/.claude/CLAUDE.md
+~/.claude/tokenklaw/*
 ```
 
-### Run again (same request)
+The install flow is conservative around existing user configuration:
 
-```bash
-tokenklaw run "explain this repo architecture"
-```
+- TokenKlaw adds its `UserPromptExpansion` hook without removing unrelated hooks.
+- TokenKlaw only writes a `statusLine` command when no statusline exists or when the existing statusline already belongs to TokenKlaw.
+- TokenKlaw keeps its active/inactive state in `~/.claude/tokenklaw/activation-state.json`.
+- The generated statusline script reads state and prints `[TOKENKLAW]` only when active.
+
+## Runtime Commands
+
+Inside Claude Code:
 
 ```text
-provider: anthropic
-fingerprint: 4e4f2f6a...
-cache: hit
-input_tokens: 0 provider tokens
-output_tokens: cached
-estimated_cost_usd: 0.0000
-saved_tokens_estimate: 2381
+/tokenklaw
+/tk
+/tokenklaw-help
+/tokenklaw-off
+/tokenklaw-stats
 ```
 
-### Stats
+Command behavior:
+
+| Command | Behavior |
+| --- | --- |
+| `/tokenklaw` | Activates TokenKlaw and writes active state. |
+| `/tk` | Alias for `/tokenklaw`. |
+| `/tokenklaw-help` | Shows the command table. |
+| `/tokenklaw-off` | Deactivates TokenKlaw and clears the statusline badge. |
+| `/tokenklaw-stats` | Shows active/inactive state, response settings, and statusline state. |
+
+CLI-side controls are also available:
 
 ```bash
+tokenklaw activate on
+tokenklaw activate stats
+tokenklaw activate off
+```
+
+## CLI Commands
+
+```bash
+tokenklaw doctor
+tokenklaw install claude
+tokenklaw install all
+tokenklaw activate on
+tokenklaw activate stats
+tokenklaw activate off
+tokenklaw run "explain this repo architecture"
+tokenklaw inspect --limit 5
 tokenklaw stats
 ```
 
-```text
-requests_total: 147
-cache_hit_rate: 42.2%
-input_tokens_baseline: 418,220
-input_tokens_actual: 161,570
-estimated_tokens_saved: 256,650
-estimated_reduction: 61.4%
-```
+## Runtime Support Matrix
 
-### Inspect
+| Runtime | Status | Notes |
+| --- | --- | --- |
+| Claude Code | Working | Validated command activation, hook interception, state file, and `[TOKENKLAW]` statusline. |
+| Codex CLI | Experimental | Generates TokenKlaw activation artifacts and capability notes. |
+| Roo Code | Experimental | Generates skill/prompt/rules scaffolding. |
+| Cursor | Experimental | Generates prompt-injection style scaffolding. |
+| Cline | Experimental | Generates activation scaffolding. |
+| Continue | Experimental | Generates config-oriented activation notes. |
+| Gemini / Antigravity | Experimental | Generates prompt/context scaffolding. |
+| OpenClaw | Experimental | Includes SOUL/context compression and middleware notes. |
+| Hermes | Experimental | Includes startup context and memory compression notes. |
+| Windsurf | Scaffold | Future runtime target. |
+| OpenCode | Scaffold | Future runtime target. |
+| aider | Scaffold | Future runtime target. |
+| OpenDevin | Scaffold | Future runtime target. |
+
+## Verification
+
+Core local checks:
 
 ```bash
-tokenklaw inspect --limit 5
+pnpm --filter @tokenklaw/core build
+pnpm --filter @tokenklaw/cli build
+node scripts/verify-claude-activation-runtime.cjs
 ```
+
+Site build:
+
+```bash
+pnpm --filter site build
+```
+
+Claude plugin validation:
+
+```bash
+claude plugin validate %USERPROFILE%\.claude --strict
+```
+
+## Troubleshooting
+
+### Logo is broken on GitHub
+
+The README uses a repository-relative image path:
 
 ```text
-#   ts                  provider   cache   input   output   saved
-1   2025-07-16T10:41Z   openai     hit     0       cached   1810
-2   2025-07-16T10:39Z   openai     miss    1810    420      0
-3   2025-07-16T10:31Z   anthropic  hit     0       cached   2381
-4   2025-07-16T10:28Z   anthropic  miss    2381    1099     0
-5   2025-07-16T10:22Z   openai     miss    1220    360      0
+apps/site/public/tokenklaw-logo.png
 ```
 
-## Screenshots
+This avoids depending on an external image host. If the image does not appear on GitHub, confirm the file is committed and pushed to the `main` branch.
 
-| Description | Image |
-|-------------|-------|
-| Claude dropdown with full TokenKlaw command suite | ![Claude dropdown](media/claude-dropdown.png) |
-| `/tokenklaw` activation response | ![Activation response](media/activation.png) |
-| `/tokenklaw-help` command list | ![Help output](media/help.png) |
-| One‑command install (`tokenklaw install claude`) | ![Install flow](media/install.png) |
-| Full activation workflow (install → activate → dropdown) | ![Full flow](media/full-flow.gif) |
+### Claude commands do not appear
 
+Run:
 
+```bash
+tokenklaw install claude
+claude plugin validate %USERPROFILE%\.claude --strict
+```
+
+Then restart Claude Code.
+
+### `[TOKENKLAW]` does not appear
+
+Run `/tokenklaw` first. The badge appears only when the activation state file has `enabled: true`.
+
+The state file is:
 
 ```text
-┌──────────────┐
-│ AI Agent     │
-└──────┬───────┘
-       │ request
-       v
-┌──────────────┐
-│ TokenKlaw    │
-│ - fingerprint│
-│ - reduction  │
-│ - cache      │
-└──────┬───────┘
-       │ optimized request
-       v
-┌──────────────┐
-│ Provider API │
-│ OpenAI / etc │
-└──────────────┘
+~/.claude/tokenklaw/activation-state.json
 ```
 
-## Troubleshooting install issues
+### Windows native dependency build errors
 
-If `pnpm install` fails on `better-sqlite3`:
-
-1. Use **Node 20 LTS** or **Node 22 LTS**
-2. Install **Visual Studio Build Tools** with **Desktop development with C++**
-3. Retry `pnpm install`
-4. If Windows native build still fails, try running in **WSL/Linux**
+Use Node 20 or 22 LTS and install Visual Studio Build Tools with Desktop development with C++.
 
 ## Roadmap
 
-- ship stable CLI command surface (`run`, `stats`, `inspect`)
-- expand provider adapters beyond skeleton implementations
-- publish npm package
-- add adapter-specific benchmark harness
-- harden cache invalidation + policy controls
+- Harden Claude Code demo and recording behavior.
+- Expand real-runtime validation for Cursor, Roo Code, Cline, Continue, Gemini, OpenClaw, and Hermes.
+- Publish a production npm package.
+- Add provider-level token accounting and cache-hit reporting.
+- Add repeatable integration tests for runtime installers.
 
 ## License
 
-MIT © Paul Hartmann ([@janpaul80](https://github.com/janpaul80))
+MIT (c) Paul Hartmann ([@janpaul80](https://github.com/janpaul80))

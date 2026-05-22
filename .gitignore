@@ -1,5 +1,22 @@
-*.node_modules*
-node_modules/
-dist/
-.turbo/
-*.db
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules
+
+# Builds
+dist
+.next
+out
+
+# Local runtime/test artifacts
+.tokenklaw
+.tmp
+tmp
+activation-state.json
+activation-stats.json
+
+# Vercel local metadata
+.vercel

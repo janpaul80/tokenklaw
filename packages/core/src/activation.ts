@@ -218,6 +218,16 @@ function writeFileSafe(filePath: string, content: string) {
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
+function removeFileSafe(filePath: string) {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch {
+    // Cleanup is best-effort; failed cleanup must not block fresh artifact writes.
+  }
+}
+
 function readJsonFile<T>(filePath: string, fallback: T): T {
   if (!fs.existsSync(filePath)) return fallback;
   try {
@@ -227,6 +237,14 @@ function readJsonFile<T>(filePath: string, fallback: T): T {
   } catch {
     return fallback;
   }
+}
+
+function writeJsonFile(filePath: string, value: unknown) {
+  writeFileSafe(filePath, JSON.stringify(value, null, 2));
+}
+
+function getClaudeActivationStatePath(baseDir: string): string {
+  return path.join(baseDir, 'tokenklaw', 'activation-state.json');
 }
 
 function getCapability(agent: AgentId): RuntimeCapability {
@@ -396,6 +414,46 @@ function getAgentBaseDir(agent: AgentId): string {
   }
 }
 
+function installClaudeUserPromptExpansionHook(baseDir: string) {
+  const settingsPath = path.join(baseDir, 'settings.json');
+  const settings = readJsonFile<any>(settingsPath, {});
+  const hookCommand = `node "${path.join(baseDir, 'hooks', 'tokenklaw.pre-response.cjs')}"`;
+  const statusLineCommand = `powershell -NoProfile -ExecutionPolicy Bypass -File "${path.join(
+    baseDir,
+    'hooks',
+    'tokenklaw-statusline.ps1'
+  )}"`;
+  const tokenklawHook = {
+    matcher: 'tokenklaw|tk|tokenklaw-help|tokenklaw-off|tokenklaw-stats',
+    hooks: [
+      {
+        type: 'command',
+        command: hookCommand,
+        timeout: 3,
+      },
+    ],
+  };
+
+  settings.hooks = settings.hooks || {};
+  const existing = Array.isArray(settings.hooks.UserPromptExpansion) ? settings.hooks.UserPromptExpansion : [];
+  settings.hooks.UserPromptExpansion = [
+    tokenklawHook,
+    ...existing.filter((entry: any) => entry && entry.matcher !== tokenklawHook.matcher),
+  ];
+
+  const existingStatusLine = settings.statusLine;
+  const existingCommand =
+    existingStatusLine && typeof existingStatusLine.command === 'string' ? existingStatusLine.command : '';
+  if (!existingStatusLine || existingCommand.includes('tokenklaw-statusline.ps1')) {
+    settings.statusLine = {
+      type: 'command',
+      command: statusLineCommand,
+    };
+  }
+  writeJsonFile(settingsPath, settings);
+}
+
+
 function getAgentLabel(agent: AgentId): string {
   switch (agent) {
     case 'claude':
@@ -473,6 +531,16 @@ class ClaudePluginInstaller extends BaseRuntimeInstaller {
     super('claude');
   }
 
+  private buildCommandMarkdown(description: string, body: string): string {
+    return `---
+description: ${description}
+disable-model-invocation: true
+---
+
+${body.trim()}
+`;
+  }
+
   buildTarget(): InstallTarget {
     const files: InstallFile[] = [];
 
@@ -486,33 +554,21 @@ class ClaudePluginInstaller extends BaseRuntimeInstaller {
       name: path.relative(this.baseDir, path.join(pluginDir, 'plugin.json')),
       content: JSON.stringify(
         {
-          schema_version: '1.0',
-          id: 'at.tokenklaw.activation',
-          name: 'TokenKlaw',
+          name: 'tokenklaw',
+          displayName: 'TokenKlaw',
           version: '0.1.0',
           description: 'Universal token optimization activation layer for AI coding agents.',
-          author: 'TokenKlaw',
-          homepage: 'https://token.klaw.at',
-          entrypoints: {
-            commands: [
-              'tokenklaw',
-              'tk',
-              'tokenklaw-help',
-              'tokenklaw-off',
-              'tokenklaw-stats',
-              'tokenklaw-compress',
-              'tokenklaw-review',
-              'tokenklaw-cache',
-              'tokenklaw-agent',
-            ],
-            skills: ['tokenklaw'],
-            hooks: [
-              {
-                event: 'pre-response',
-                handler: 'hooks/tokenklaw.pre-response.cjs',
-              },
-            ],
+          author: {
+            name: 'TokenKlaw',
+            url: 'https://github.com/janpaul80/tokenklaw',
           },
+          homepage: 'https://token.klaw.at',
+          repository: 'https://github.com/janpaul80/tokenklaw',
+          license: 'MIT',
+          keywords: ['tokens', 'compression', 'context', 'productivity'],
+          commands: ['./commands/'],
+          skills: ['./skills/'],
+          hooks: './hooks/hooks.json',
         },
         null,
         2
@@ -523,104 +579,53 @@ class ClaudePluginInstaller extends BaseRuntimeInstaller {
       name: path.relative(this.baseDir, path.join(pluginDir, 'marketplace.json')),
       content: JSON.stringify(
         {
-          plugin_id: 'at.tokenklaw.activation',
-          listing: {
+          name: 'tokenklaw-marketplace',
+          description: 'TokenKlaw Claude Code plugin marketplace for runtime activation commands.',
+          owner: {
             name: 'TokenKlaw',
-            category: 'developer-tools',
-            tags: ['tokens', 'compression', 'context', 'productivity'],
-            summary: 'Activate token-saving mode and context compression behavior.',
           },
+          plugins: [
+            {
+              name: 'tokenklaw',
+              source: './',
+              description: 'Activate token-saving mode and context compression behavior.',
+              category: 'developer-tools',
+              tags: ['tokens', 'compression', 'context', 'productivity'],
+            },
+          ],
         },
         null,
         2
       ),
     });
 
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw.toml')),
-      content: `[command]
-name = "tokenklaw"
-description = "Activate TokenKlaw token-saving behavior"
+    const activeOutput = formatActivationEnabledMessage();
+    const inactiveOutput = formatActivationDisabledMessage();
+    const helpOutput = [
+      '/tokenklaw        Activate token-saving mode',
+      '/tk               Alias of /tokenklaw',
+      '/tokenklaw-help   Show this help table',
+      '/tokenklaw-off    Disable token-saving mode',
+    ].join('\n');
 
-[command.behavior]
-activation = "token-saving"
-aliases = ["tk"]
-`,
-    });
+    const commandFiles: Array<[string, string, string]> = [
+      ['tokenklaw', 'Activate TokenKlaw token-saving behavior', `Output exactly:\n\n${activeOutput}`],
+      ['tk', 'Alias for /tokenklaw', `Output exactly:\n\n${activeOutput}`],
+      ['tokenklaw-help', 'Show TokenKlaw command help', `Output exactly:\n\n${helpOutput}`],
+      ['tokenklaw-off', 'Disable TokenKlaw mode for the current session', `Output exactly:\n\n${inactiveOutput}`],
+      ['tokenklaw-stats', 'Show current TokenKlaw session and token-saving status', 'Show current TokenKlaw active/inactive state and statusline state.'],
+      ['tokenklaw-compress', 'Compress repeated logs, stack traces, or long context into a shorter technical summary', 'Compress the provided context. Preserve commands, file paths, code, error names, and the highest-signal lines.'],
+      ['tokenklaw-review', 'Review the current response or context for token waste and suggest a shorter version', 'Review the provided content for avoidable token waste. Return concise, actionable edits only.'],
+      ['tokenklaw-cache', 'Show cache guidance and repeated prompt behavior', 'Explain whether the current request looks repeated and give compact cache guidance.'],
+      ['tokenklaw-agent', 'Show supported runtime integrations and their current status', 'Summarize TokenKlaw runtime support status for Claude Code, Codex CLI, Roo Code, Cursor, Cline, Continue, Gemini, OpenClaw, Hermes, Windsurf, OpenCode, aider, and OpenDevin.'],
+    ];
 
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tk.toml')),
-      content: `[command]
-name = "tk"
-description = "Alias for /tokenklaw"
-
-[command.behavior]
-alias_of = "tokenklaw"
-`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-help.toml')),
-      content: `[command]
-name = "tokenklaw-help"
-description = "Show TokenKlaw command help"
-
-[command.behavior]
-activation = "help"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-stats.toml')),
-      content: `[command]
-name = "tokenklaw-stats"
-description = "Show current TokenKlaw session and token-saving status"
-
-[command.behavior]
-activation = "stats"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-off.toml')),
-      content: `[command]
-name = "tokenklaw-off"
-description = "Disable TokenKlaw mode for the current session"
-
-[command.behavior]
-activation = "disable"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-compress.toml')),
-      content: `[command]
-name = "tokenklaw-compress"
-description = "Compress repeated logs, stack traces, or long context into a shorter technical summary"
-
-[command.behavior]
-activation = "compress"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-review.toml')),
-      content: `[command]
-name = "tokenklaw-review"
-description = "Review the current response or context for token waste and suggest a shorter version"
-
-[command.behavior]
-activation = "review"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-cache.toml')),
-      content: `[command]
-name = "tokenklaw-cache"
-description = "Show cache guidance and repeated prompt behavior"
-
-[command.behavior]
-activation = "cache"`,
-    });
-    files.push({
-      name: path.relative(this.baseDir, path.join(commandDir, 'tokenklaw-agent.toml')),
-      content: `[command]
-name = "tokenklaw-agent"
-description = "Show supported runtime integrations and their current status"
-
-[command.behavior]
-activation = "agent"`,
-    });
+    for (const [command, description, body] of commandFiles) {
+      files.push({
+        name: path.relative(this.baseDir, path.join(commandDir, `${command}.md`)),
+        content: this.buildCommandMarkdown(description, body),
+      });
+    }
 
     files.push({
       name: path.relative(this.baseDir, path.join(skillDir, 'SKILL.md')),
@@ -689,16 +694,84 @@ If the host runtime reports upstream provider failures (for example HTTP 402, qu
     });
 
     files.push({
+      name: path.relative(this.baseDir, path.join(hooksDir, 'hooks.json')),
+      content: JSON.stringify(
+        {
+          hooks: {
+            UserPromptExpansion: [
+              {
+                matcher: 'tokenklaw|tk|tokenklaw-help|tokenklaw-off|tokenklaw-stats',
+                hooks: [
+                  {
+                    type: 'command',
+                    command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/tokenklaw.pre-response.cjs"',
+                    timeout: 3,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        null,
+        2
+      ),
+    });
+
+    files.push({
       name: path.relative(this.baseDir, path.join(hooksDir, 'tokenklaw.pre-response.cjs')),
       content: `'use strict';
 
+var fs = require('fs');
+var path = require('path');
+
 /**
- * TokenKlaw pre-response hook (CommonJS, dependency-free).
+ * TokenKlaw prompt-expansion hook (CommonJS, dependency-free).
  * - Safe on missing stdin/input
  * - Never throws intentionally
- * - Emits no error output during normal operation
- * - Pass-through behavior to avoid altering successful activation responses
+ * - Emits no stderr during normal operation
+ * - Blocks core TokenKlaw command expansion before the model sees it
  */
+
+var COMMAND_OUTPUTS = {
+  tokenklaw: ${JSON.stringify(formatActivationEnabledMessage())},
+  tk: ${JSON.stringify(formatActivationEnabledMessage())},
+  'tokenklaw-help': ${JSON.stringify(['/tokenklaw        Activate token-saving mode', '/tk               Alias of /tokenklaw', '/tokenklaw-help   Show this help table', '/tokenklaw-off    Disable token-saving mode'].join('\n'))},
+  'tokenklaw-off': ${JSON.stringify(formatActivationDisabledMessage())}
+};
+
+function getStateDir() {
+  return path.resolve(__dirname, '..', 'tokenklaw');
+}
+
+function getStatePath() {
+  return path.join(getStateDir(), 'activation-state.json');
+}
+
+function getStatsPath() {
+  return path.join(getStateDir(), 'activation-stats.json');
+}
+
+function defaultState() {
+  return {
+    enabled: false,
+    mode: 'token-saving',
+    conciseReplies: true,
+    duplicateDetection: true,
+    cacheGuidance: true,
+    compressedLogs: true,
+    summarizeStackTraces: true,
+    updatedAt: Date.now()
+  };
+}
+
+function defaultStats() {
+  return {
+    activated_count: 0,
+    deactivated_count: 0,
+    last_activated_at: null,
+    last_deactivated_at: null
+  };
+}
 
 function safeParseJson(raw) {
   if (!raw || typeof raw !== 'string') return null;
@@ -707,6 +780,61 @@ function safeParseJson(raw) {
   } catch (_) {
     return null;
   }
+}
+
+function readJsonFile(filePath, fallback) {
+  try {
+    if (!fs.existsSync(filePath)) return fallback;
+    var raw = fs.readFileSync(filePath, 'utf8').trim();
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function writeJsonFile(filePath, value) {
+  try {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(value, null, 2), 'utf8');
+  } catch (_) {
+    // State write failures must not break Claude prompt handling.
+  }
+}
+
+function setActivationState(enabled) {
+  var state = readJsonFile(getStatePath(), defaultState());
+  var stats = readJsonFile(getStatsPath(), defaultStats());
+  var now = Date.now();
+  state.enabled = !!enabled;
+  state.updatedAt = now;
+  if (enabled) {
+    stats.activated_count = (stats.activated_count || 0) + 1;
+    stats.last_activated_at = now;
+  } else {
+    stats.deactivated_count = (stats.deactivated_count || 0) + 1;
+    stats.last_deactivated_at = now;
+  }
+  writeJsonFile(getStatePath(), state);
+  writeJsonFile(getStatsPath(), stats);
+  return state;
+}
+
+function getActivationState() {
+  return readJsonFile(getStatePath(), defaultState());
+}
+
+function formatStatsMessage() {
+  var state = getActivationState();
+  var onOff = state.enabled ? 'on' : 'off';
+  return [
+    'TokenKlaw active: ' + onOff,
+    'Context reduction: ' + onOff,
+    'Duplicate detection: ' + onOff,
+    'Cache guidance: ' + onOff,
+    'Verbose replies: ' + (state.enabled ? 'reduced' : 'default'),
+    'Statusline: ' + (state.enabled ? '[TOKENKLAW]' : 'off')
+  ].join('\\n');
 }
 
 function readStdin(callback) {
@@ -734,34 +862,26 @@ function readStdin(callback) {
   }
 }
 
-function writeOutput(payload) {
-  try {
-    if (typeof payload === 'string') {
-      process.stdout.write(payload);
-      return;
-    }
-    process.stdout.write(JSON.stringify(payload));
-  } catch (_) {
-    // Intentionally swallow to keep hook non-blocking and quiet.
-  }
-}
-
-function passthrough(raw) {
-  const parsed = safeParseJson(raw);
-  if (parsed !== null) {
-    writeOutput(parsed);
-    return;
-  }
-  writeOutput(raw || '');
-}
-
 (function main() {
   try {
     readStdin(function (raw) {
-      try {
-        passthrough(raw);
-      } catch (_) {
-        writeOutput(raw || '');
+      var input = safeParseJson(raw) || {};
+      var commandName = String(input.command_name || '').replace(/^\\//, '');
+      if (!commandName && typeof input.prompt === 'string') {
+        commandName = input.prompt.trim().split(/\\s+/)[0].replace(/^\\//, '');
+      }
+      if (commandName === 'tokenklaw' || commandName === 'tk') {
+        setActivationState(true);
+      } else if (commandName === 'tokenklaw-off') {
+        setActivationState(false);
+      } else if (commandName === 'tokenklaw-stats') {
+        COMMAND_OUTPUTS['tokenklaw-stats'] = formatStatsMessage();
+      }
+      if (Object.prototype.hasOwnProperty.call(COMMAND_OUTPUTS, commandName)) {
+        process.stdout.write(JSON.stringify({
+          decision: 'block',
+          reason: COMMAND_OUTPUTS[commandName]
+        }));
       }
     });
   } catch (_) {
@@ -771,7 +891,41 @@ function passthrough(raw) {
 
 module.exports = {
   safeParseJson: safeParseJson,
+  getStatePath: getStatePath,
+  COMMAND_OUTPUTS: COMMAND_OUTPUTS,
 };
+`,
+    });
+
+    files.push({
+      name: path.relative(this.baseDir, path.join(hooksDir, 'tokenklaw-statusline.ps1')),
+      content: `$ErrorActionPreference = 'SilentlyContinue'
+
+$candidatePaths = @()
+if ($env:TOKENKLAW_DATA_DIR) {
+  $candidatePaths += (Join-Path $env:TOKENKLAW_DATA_DIR 'activation-state.json')
+}
+if ($env:USERPROFILE) {
+  $candidatePaths += (Join-Path $env:USERPROFILE '.claude\\tokenklaw\\activation-state.json')
+}
+$candidatePaths += (Join-Path (Get-Location) '.tokenklaw\\activation-state.json')
+
+foreach ($statePath in $candidatePaths) {
+  if (-not (Test-Path -LiteralPath $statePath)) {
+    continue
+  }
+
+  try {
+    $state = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
+    if ($state.enabled -eq $true) {
+      Write-Output '[TOKENKLAW]'
+      exit 0
+    }
+  } catch {
+  }
+}
+
+exit 0
 `,
     });
 
@@ -1034,6 +1188,21 @@ export function installActivationArtifacts(agent: AgentId, options: InstallOptio
 
   if (!dryRun) {
     ensureDir(target.dir);
+    if (agent === 'claude') {
+      for (const legacyCommand of [
+        'tokenklaw',
+        'tk',
+        'tokenklaw-help',
+        'tokenklaw-off',
+        'tokenklaw-stats',
+        'tokenklaw-compress',
+        'tokenklaw-review',
+        'tokenklaw-cache',
+        'tokenklaw-agent',
+      ]) {
+        removeFileSafe(path.join(target.dir, 'commands', `${legacyCommand}.toml`));
+      }
+    }
   }
 
   for (const file of target.files) {
@@ -1042,6 +1211,11 @@ export function installActivationArtifacts(agent: AgentId, options: InstallOptio
       writeFileSafe(fullPath, file.content);
     }
     written.push(fullPath);
+  }
+
+  if (!dryRun && agent === 'claude') {
+    installClaudeUserPromptExpansionHook(target.dir);
+    written.push(path.join(target.dir, 'settings.json'));
   }
 
   return {
