@@ -204,7 +204,7 @@ powershell -ExecutionPolicy Bypass -File .\\install.ps1 -Runtime claude`}
       <section className="border-t border-line py-14">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 px-6 md:flex-row md:items-center md:px-8">
           <div>
-            <p className="text-sm text-muted">Created by Paul Hartmann (@janpaul80)</p>
+            <p className="text-sm text-muted">Created by Paul Hartmann (@janpaul80) • Build: {new Date().toISOString().slice(0,10)}</p>
             <p className="mt-1 text-sm text-text">Production-first runtime infrastructure for AI-native development.</p>
           </div>
           <Link
