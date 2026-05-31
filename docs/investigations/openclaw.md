@@ -1,114 +1,64 @@
 # OpenClaw Integration Investigation
 
-**Status**: Implementation Ready  
+**Status**: Experimental (Scaffolded) - Gap Analysis Complete  
 **Last Updated**: 2026-05-31  
 **Investigator**: Claude Code (TokenKlaw)
 
 ## Executive Summary
 
-OpenClaw is an active target runtime with existing TokenKlaw adapter scaffolding. Integration points are defined in `packages/core/src/activation.ts`.
+OpenClaw is a real Rust-based runtime. Gap Analysis reveals the TokenKlaw installation target is incorrect.
 
-## Architecture (From Code Analysis)
+## Actual Runtime Locations Found
 
-### Config Location
+| Component | Directory | Details |
+|------------|----------|---------|
+| **Main project** | `~/zeroclaw/` | Full Rust project (not .openclaw) |
+| Config | `zeroclaw/crates/zeroclaw-config/src/` | policy.rs, secrets.rs, skill_bundles.rs |
+| Memory | `zeroclaw/crates/zeroclaw-memory/src/` | sqlite.rs, qdrant.rs, lucid.rs, postgres.rs |
+| Plugins | `zeroclaw/crates/zeroclaw-plugins/src/` | host.rs, runtime.rs, wasm_channel.rs |
+| Runtime | `zeroclaw/crates/zeroclaw-runtime/src/` | agent/, hooks/, daemon/, health/ |
+| Skills | `zeroclaw/crates/zeroclaw-config/src/skill_bundles.rs` | Built-in skill system |
 
-- **Primary**: `~/.openclaw` (Windows) or `~/.config/openclaw` (Linux/macOS)
-- **TokenKlaw target**: `.openclaw/tokenklaw/`
+## TokenKlaw Installation
 
-### Current Install Artifacts
+**Current target**: `~/.openclaw/tokenklaw/`
 
-The OpenClawInstaller generates:
-
+**Files generated**:
 ```
 ~/.openclaw/tokenklaw/
-  SOUL.md                         # Compact operational memory
-  middleware.token-compression.md  # Compression layer pipeline
+  SOUL.md
+  middleware.token-compression.md
+  tokenklaw.rules.md
+  tokenklaw.skill.md
+  tokenklaw.prompt.md
+  tokenklaw.slash-commands.md
+  runtime-capabilities.json
+  runtime-notes.md
 ```
 
-### Integration Points
+## Gap Analysis
 
-| Point | Current | Possibility |
-|-------|---------|------------|
-| Config dir | `.openclaw` | Write to this location |
-| Memory system | `SOUL.md` | TokenKlaw token rules |
-| Middleware | `middleware.*.md` | Compression hooks |
-| Startup | Not implemented | startup-context.md |
-| Commands | Not implemented | Custom command files |
-| Status | Not implemented | Status indicator |
+| TokenKlaw Writes | OpenClaw Reads | Gap? |
+|------------------|----------------|------|
+| `~/.openclaw/tokenklaw/` | `~/zeroclaw/crates/*/` | ⚠️ **WRONG PATH** |
 
-### What's Already Implemented
+**Critical Finding**: TokenKlaw writes to `.openclaw/` but the actual OpenClaw runtime at `zeroclaw/` is a Rust project that reads from its internal crates, not from `.openclaw/`.
 
-From `packages/core/src/activation.ts`:
+## Integration Opportunities
 
-```typescript
-case 'openclaw':
-  return isWin ? path.join(home, '.openclaw') : path.join(home, '.config', 'openclaw');
-```
+### If integrating with real OpenClaw (zeroclaw)
 
-Installer generates two files:
-- `SOUL.md` - dedupe repetitive context, compress system prompt overlays
-- `middleware.token-compression.md` - context dedupe, stack-trace compression, prompt budget optimization
+1. **Skills injection**: Write to `zeroclaw/crates/zeroclaw-config/src/skill_bundles.rs` or equivalent
+2. **Memory layer**: Integrate with `zeroclaw/crates/zeroclaw-memory/src/`
+3. **Plugin system**: Use WASM plugin system in `zeroclaw/crates/zeroclaw-plugins/src/`
+4. **Hooks**: Add to `zeroclaw/crates/zeroclaw-runtime/src/hooks/`
 
-### Opportunities for Deeper Integration
+### Current status
 
-1. **Startup hook**: Add `startup.md` or modify initialization flow
-2. **Command system**: If OpenClaw supports markdown commands, generate `/tokenklaw` style commands
-3. **Memory optimization**: Enhanced SOUL with session-specific compression rules
-4. **Status badge**: If OpenClaw has status display, inject `[TOKENKLAW]` indicator
-5. **Middleware pipeline**: Extend compression layers with deduplication rules
-6. **Runtime state**: Write activation state to `.openclaw/tokenklaw/state.json`
+**Remain at "Scaffolded"** until real integration path is proven.
 
-### Files to Create/Modify for TokenKlaw Integration
+## Next Steps
 
-```
-~/.openclaw/tokenklaw/
-  activation-state.json       # Active/inactive state
-  commands/                  # Custom commands (if supported)
-  middleware/
-    context-dedupe.md       # Context deduplication rules
-    response-compression.md # Response compression
-```
-
-## Implementation-Ready Adapter Specification
-
-### Priority Integration Points
-
-1. **Activation state file**:
-   - Path: `~/.openclaw/tokenklaw/activation-state.json`
-   - Schema: `{ enabled: boolean, mode: string, timestamp: number }`
-
-2. **Memory injection**:
-   - Path: `~/.openclaw/tokenklaw/memory-optimization.md`
-   - Content: Token budget rules, context dedupe, verbosity shaping
-
-3. **Startup flow**:
-   - Check for `~/.openclaw/tokenklaw/startup.md`
-   - Inject TokenKlaw memory on OpenClaw startup
-
-4. **Middleware**:
-   - Extend compression pipeline with TokenKlaw-specific rules
-   - Path: `~/.openclaw/tokenklaw/middleware/`
-
-### Command Support
-
-If OpenClaw supports .md command files:
-- Generate `/tokenklaw` command → activates TokenKlaw
-- Generate `/tk` command → alias
-- Generate `/tokenklaw-off` command → deactivates
-
-### Status Opportunities
-
-- If OpenClaw has statusline: Inject `[TOKENKLAW]` when active
-- If OpenClaw has state display: Show enabled/disabled indicator
-
-## Current Status
-
-**Stage**: Implementation ready - adapters scaffolded, needs real-runtime validation
-
-**Next Action**: Test install in actual OpenClaw environment
-
-**Blockers**: None identified - architecture is clear
-
-## Link to Code
-
-See `packages/core/src/activation.ts` lines 1066-1097 for current implementation.
+1. Confirm whether to integrate with Rust zeroclaw or a different runtime
+2. If zeroclaw: determine actual user-facing config/skills API
+3. Update TokenKlaw installer to target correct location
