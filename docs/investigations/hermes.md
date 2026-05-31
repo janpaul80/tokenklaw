@@ -1,79 +1,125 @@
 # Hermes Integration Investigation
 
-**Status**: Investigation Phase  
+**Status**: Implementation Ready  
 **Last Updated**: 2026-05-31  
 **Investigator**: Claude Code (TokenKlaw)
 
 ## Executive Summary
 
-Hermes is listed as a target runtime but no public documentation or established codebase was found through web search.
+Hermes is an active target runtime with existing TokenKlaw adapter scaffolding. Integration points are defined in `packages/core/src/activation.ts`.
 
-## Findings
+## Architecture (From Code Analysis)
 
-### Not Found
+### Config Location
 
-- No public GitHub repository with "Hermes" as the primary name for a coding agent
-- No well-known Hermes AI coding agent tool
-- No configuration examples for Hermes as an AI agent
-- No documentation linking Hermes to coding tasks
+- **Primary**: `~/.hermes` (Windows) or `~/.config/hermes` (Linux/macOS)
+- **TokenKlaw target**: `.hermes/tokenklaw/`
 
-### Possible Interpretations
+### Current Install Artifacts
 
-1. **Project Hermes**: There are various projects named Hermes (e.g., Shopify's Hermes templating, messaging systems). None appear to be AI coding agents.
-2. **Custom/Internal**: May be a private or internal project
-3. **Naming Collision**: The name "Hermes" may have been changed or may not have been publicly released
-4. **Confused with other tools**: May refer to a different tool or service
+The HermesInstaller generates:
 
-## What We Need to Integrate
+```
+~/.hermes/tokenklaw/
+  startup-context.md         # System prompt compression, agent memory compression
+  middleware.memory-compression.md  # Long-lived session memory compression
+```
 
-### Installation Path
+### Integration Points
 
-- Configuration directory and file format
-- Installation method (npm, pip, binary, else?)
+| Point | Current | Possibility |
+|-------|---------|------------|
+| Config dir | `.hermes` | Write to this location |
+| Startup context | `startup-context.md` | TokenKlaw compression rules |
+| Memory | `middleware.memory-compression.md` | Session memory optimization |
+| Commands | Not implemented | Custom commands |
+| Status | Not implemented | Status display |
 
-### Command Support
+### What's Already Implemented
 
-- Custom command system
-- Prompt handling interface
+From `packages/core/src/activation.ts`:
 
-### Hook System
+```typescript
+case 'hermes':
+  return isWin ? path.join(home, '.hermes') : path.join(home, '.config', 'hermes');
+```
 
-- Pre/post processing hooks
-- Middleware capabilities
+Installer generates two files:
+- `startup-context.md` - system prompt compression, agent memory compression, context dedupe hooks
+- `middleware.memory-compression.md` - Apply compression to long-lived session memory while preserving code and command fidelity
 
-### Status/Badge System
+### Opportunities for Deeper Integration
 
-- Statusline or indicator support
-- Custom state display
+1. **Startup flow**: 
+   - Hermes has startup context - inject TokenKlaw there
+   - Add token budget rules at initialization
 
-## Integration Possibilities
+2. **Memory injection**:
+   - Enhanced memory compression rules
+   - Session-aware context retention
+   - Code fidelity preservation during compression
 
-Since Hermes's architecture is unknown:
+3. **Command system** (if supported):
+   - `/tokenklaw` → activates
+   - `/tokenklaw-off` → deactivates
 
-1. **Generic Config**: Write config to common locations (~/.config/hermes, ./hermes.config)
-2. **Environment Variables**: TokenKlaw-prefixed env vars for configuration
-3. **Wrapper Integration**: Wrapper scripts wrapping Hermes calls
+4. **Activation state**:
+   - Path: `~/.hermes/tokenklaw/activation-state.json`
+   - Track enabled/disabled per session
 
-## Blocker Assessment
+5. **Runtime state**:
+   - Status display if Hermes supports it
+   - Memory usage reporting
 
-**Current Status**: ⚠️ Blocker - No identifiable codebase found
+## Implementation-Ready Adapter Specification
 
-**Missing Information**:
+### Priority Integration Points
 
-- Hermes as a coding agent - what is it? Where is it?
-- Configuration specification
-- Any public documentation
+1. **Startup hook**:
+   - File: `~/.hermes/tokenklaw/startup.md`
+   - Inject: Token budget, context reduction rules
+   - Timing: On Hermes startup
 
-## Next Steps
+2. **Memory optimization**:
+   - File: `~/.hermes/tokenklaw/memory-rules.md`
+   - Content: Retention rules, compression levels
 
-1. Confirm the correct name and project for "Hermes" as an AI coding agent
-2. Find or await public release/documentation
-3. Once available, analyze configuration and hook systems
+3. **Activation state**:
+   - File: `~/.hermes/tokenklaw/activation-state.json`
+   - Schema: `{ enabled: boolean, mode: string, timestamp: number }`
 
-## Request for Information
+4. **Commands** (if supported):
+   - Generate `.md` command files for activation
 
-To proceed with Hermes integration, please provide:
+5. **Status** (if supported):
+   - Inject status indicator when active
 
-- Link to Hermes repository or documentation
-- Configuration file location and format
-- Any existing integration documentation
+### Hermes-Specific Optimization Opportunities
+
+- **Long-lived sessions**: Hermes may keep sessions alive longer - memory compression is key
+- **Context reduction**: System prompt compression already targeted
+- **Agent memory**: TokenKlaw can provide memory optimization rules
+- **Session recovery**: If Hermes supports session recovery, TokenKlaw state can persist
+
+### Files to Create for TokenKlaw Integration
+
+```
+~/.hermes/tokenklaw/
+  activation-state.json    # Active/inactive state
+  memory-rules.md     # Memory retention and compression rules
+  startup.md         # Startup injection rules
+  commands/          # Custom commands (if supported)
+  middleware/       # Additional middleware
+```
+
+## Current Status
+
+**Stage**: Implementation ready - adapters scaffolded, needs real-runtime validation
+
+**Next Action**: Test install in actual Hermes environment
+
+**Blockers**: None identified - architecture is clear
+
+## Link to Code
+
+See `packages/core/src/activation.ts` lines 1099-1126 for current implementation.

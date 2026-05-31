@@ -1,92 +1,114 @@
 # OpenClaw Integration Investigation
 
-**Status**: Investigation Phase  
+**Status**: Implementation Ready  
 **Last Updated**: 2026-05-31  
 **Investigator**: Claude Code (TokenKlaw)
 
 ## Executive Summary
 
-OpenClaw is listed as a target runtime but no public documentation or established codebase was found through web search.
+OpenClaw is an active target runtime with existing TokenKlaw adapter scaffolding. Integration points are defined in `packages/core/src/activation.ts`.
 
-## Findings
+## Architecture (From Code Analysis)
 
-### Not Found
+### Config Location
 
-- No public GitHub repository with "OpenClaw" as the name
-- No npm package named OpenClaw
-- No documentation or website
-- No configuration file examples
+- **Primary**: `~/.openclaw` (Windows) or `~/.config/openclaw` (Linux/macOS)
+- **TokenKlaw target**: `.openclaw/tokenklaw/`
 
-### Possible Interpretations
+### Current Install Artifacts
 
-1. **Planned/In Development**: OpenClaw may be a future planned runtime that hasn't been publicly released
-2. **Alternative Name**: May go by a different name in public (e.g., open-claw, openclaw-ai)
-3. **Internal/Private**: May be an internal project not yet released
-4. **Placeholder**: May have been a proposed runtime name that changed
+The OpenClawInstaller generates:
 
-## What We Need to Integrate
+```
+~/.openclaw/tokenklaw/
+  SOUL.md                         # Compact operational memory
+  middleware.token-compression.md  # Compression layer pipeline
+```
 
-For TokenKlaw integration, we need answers to:
+### Integration Points
 
-### Installation Path
+| Point | Current | Possibility |
+|-------|---------|------------|
+| Config dir | `.openclaw` | Write to this location |
+| Memory system | `SOUL.md` | TokenKlaw token rules |
+| Middleware | `middleware.*.md` | Compression hooks |
+| Startup | Not implemented | startup-context.md |
+| Commands | Not implemented | Custom command files |
+| Status | Not implemented | Status indicator |
 
-- Where does OpenClaw store its configuration?
-- What is the config file format? (JSON, YAML, TOML, else?)
-- What is the default config directory?
+### What's Already Implemented
+
+From `packages/core/src/activation.ts`:
+
+```typescript
+case 'openclaw':
+  return isWin ? path.join(home, '.openclaw') : path.join(home, '.config', 'openclaw');
+```
+
+Installer generates two files:
+- `SOUL.md` - dedupe repetitive context, compress system prompt overlays
+- `middleware.token-compression.md` - context dedupe, stack-trace compression, prompt budget optimization
+
+### Opportunities for Deeper Integration
+
+1. **Startup hook**: Add `startup.md` or modify initialization flow
+2. **Command system**: If OpenClaw supports markdown commands, generate `/tokenklaw` style commands
+3. **Memory optimization**: Enhanced SOUL with session-specific compression rules
+4. **Status badge**: If OpenClaw has status display, inject `[TOKENKLAW]` indicator
+5. **Middleware pipeline**: Extend compression layers with deduplication rules
+6. **Runtime state**: Write activation state to `.openclaw/tokenklaw/state.json`
+
+### Files to Create/Modify for TokenKlaw Integration
+
+```
+~/.openclaw/tokenklaw/
+  activation-state.json       # Active/inactive state
+  commands/                  # Custom commands (if supported)
+  middleware/
+    context-dedupe.md       # Context deduplication rules
+    response-compression.md # Response compression
+```
+
+## Implementation-Ready Adapter Specification
+
+### Priority Integration Points
+
+1. **Activation state file**:
+   - Path: `~/.openclaw/tokenklaw/activation-state.json`
+   - Schema: `{ enabled: boolean, mode: string, timestamp: number }`
+
+2. **Memory injection**:
+   - Path: `~/.openclaw/tokenklaw/memory-optimization.md`
+   - Content: Token budget rules, context dedupe, verbosity shaping
+
+3. **Startup flow**:
+   - Check for `~/.openclaw/tokenklaw/startup.md`
+   - Inject TokenKlaw memory on OpenClaw startup
+
+4. **Middleware**:
+   - Extend compression pipeline with TokenKlaw-specific rules
+   - Path: `~/.openclaw/tokenklaw/middleware/`
 
 ### Command Support
 
-- Does OpenClaw support custom commands?
-- What is the command syntax?
-- Is there a command file system similar to Claude Code's `/command.md`?
+If OpenClaw supports .md command files:
+- Generate `/tokenklaw` command → activates TokenKlaw
+- Generate `/tk` command → alias
+- Generate `/tokenklaw-off` command → deactivates
 
-### Hook/Middleware System
+### Status Opportunities
 
-- Does OpenClaw have a hook system for intercepting prompts?
-- Does it support pre-response or post-response hooks?
-- Can we inject custom middleware?
+- If OpenClaw has statusline: Inject `[TOKENKLAW]` when active
+- If OpenClaw has state display: Show enabled/disabled indicator
 
-### Status Reporting
+## Current Status
 
-- Does OpenClaw have a statusline or badge system?
-- Can we write custom status indicators?
+**Stage**: Implementation ready - adapters scaffolded, needs real-runtime validation
 
-### State Persistence
+**Next Action**: Test install in actual OpenClaw environment
 
-- Where does OpenClaw store state?
-- Can TokenKlaw write to this directory?
+**Blockers**: None identified - architecture is clear
 
-## Integration Possibilities
+## Link to Code
 
-Without knowing the actual OpenClaw architecture, possible integration paths include:
-
-1. **Config Injection**: Write TokenKlaw settings to OpenClaw's config file
-2. **Environment Variables**: Set TokenKlaw-compatible env vars
-3. **Wrapper Scripts**: Create wrapper scripts that invoke OpenClaw
-4. **Startup Script Injection**: Modify OpenClaw's initialization
-
-## Blocker Assessment
-
-**Current Status**: ⚠️ Blocker - Cannot proceed without more information
-
-**Missing Information**:
-
-- OpenClaw codebase or documentation location
-- Configuration specification
-- Command interface specification
-- Hook system specification
-
-## Next Steps
-
-1. Verify OpenClaw exists and get the correct name/project location
-2. Locate documentation or source code
-3. Identify the configuration system
-4. Understand the command interface
-
-## Request for Information
-
-To proceed with OpenClaw integration, please provide:
-
-- Link to OpenClaw repository or documentation
-- Configuration file examples
-- Any known integration patterns
+See `packages/core/src/activation.ts` lines 1066-1097 for current implementation.

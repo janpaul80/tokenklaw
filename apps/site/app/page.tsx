@@ -5,10 +5,10 @@ import { Section } from "@/components/section";
 
 const runtimes = [
   { name: "Claude Code", status: "Validated", detail: "Commands, hook interception, statusline badge, full activation." },
-  { name: "OpenClaw", status: "Investigation", detail: "Research phase – investigating hook system and config paths." },
-  { name: "Hermes", status: "Investigation", detail: "Research phase – investigating startup context and activation." },
-  { name: "Gemini / Antigravity", status: "Investigation", detail: "Research phase – investigating runtime architecture." },
-  { name: "OpenCode", status: "Investigation", detail: "Research phase – investigating activation design." },
+  { name: "OpenClaw", status: "Experimental", detail: "SOUL integration, middleware compression, activation state." },
+  { name: "Hermes", status: "Experimental", detail: "Startup context, memory compression, long-lived session optimization." },
+  { name: "Gemini / Antigravity", status: "Investigation", detail: "Research phase – researching integration possibilities." },
+  { name: "OpenCode", status: "Investigation", detail: "Research phase – researching configuration approaches." },
   { name: "Roo Code", status: "Experimental", detail: "Adapter scaffold generated." }
 ];
 
