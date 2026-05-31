@@ -249,8 +249,8 @@ TokenKlaw is designed as a universal activation layer for AI coding agents. Clau
 | Runtime | Status | Validation Level |
 | --- | --- | --- |
 | Claude Code | **Validated** | Full command activation, hook interception, state file, `[TOKENKLAW]` statusline |
-| OpenClaw | **Experimental** | SOUL integration, middleware compression, `~/.openclaw/tokenklaw/` target |
-| Hermes | **Experimental** | Startup context, memory compression, `~/.hermes/tokenklaw/` target |
+| OpenClaw | **Experimental (Scaffolded)** | Generates files to `~/.openclaw/tokenklaw/` — gap analysis needed to verify consumption |
+| Hermes | **Experimental (Scaffolded)** | Generates files to `~/.hermes/tokenklaw/` — gap analysis needed to verify consumption |
 | Gemini / Antigravity | **Investigation** | Research phase |
 | OpenCode | **Investigation** | Research phase |
 | Codex CLI | **Experimental** | Adapter scaffolding generated |
