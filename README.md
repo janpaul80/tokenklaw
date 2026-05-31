@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/apps/site/public/tokenklaw-logo.png" alt="TokenKlaw logo" width="220" />
+  <img src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/assets/tokenklaw-logo.png" alt="TokenKlaw logo" width="220" />
 </p>
 
 # TokenKlaw
@@ -170,6 +170,8 @@ The install flow is conservative around existing user configuration:
 
 ## Runtime Commands
 
+### Claude Code Commands
+
 Inside Claude Code:
 
 ```text
@@ -178,6 +180,10 @@ Inside Claude Code:
 /tokenklaw-help
 /tokenklaw-off
 /tokenklaw-stats
+/tokenklaw-review
+/tokenklaw-compress
+/tokenklaw-cache
+/tokenklaw-agent
 ```
 
 Command behavior:
@@ -189,6 +195,10 @@ Command behavior:
 | `/tokenklaw-help` | Shows the command table. |
 | `/tokenklaw-off` | Deactivates TokenKlaw and clears the statusline badge. |
 | `/tokenklaw-stats` | Shows active/inactive state, response settings, and statusline state. |
+| `/tokenklaw-review` | Reviews recent activation state and suggestions. |
+| `/tokenklaw-compress` | Compresses historical context for the session. |
+| `/tokenklaw-cache` | Shows cache stats for the current session. |
+| `/tokenklaw-agent` | Switches between runtime agents. |
 
 CLI-side controls are also available:
 
@@ -201,34 +211,56 @@ tokenklaw activate off
 ## CLI Commands
 
 ```bash
-tokenklaw doctor
-tokenklaw install claude
-tokenklaw install all
-tokenklaw activate on
-tokenklaw activate stats
-tokenklaw activate off
-tokenklaw run "explain this repo architecture"
-tokenklaw inspect --limit 5
-tokenklaw stats
+tokenklaw doctor                         # Check environment health
+tokenklaw run "<prompt>"                  # Run a prompt through TokenKlaw
+tokenklaw inspect [--limit N]            # Show recent requests
+tokenklaw stats                         # Show aggregated stats
+tokenklaw install <runtime>             # Install into a specific runtime
+tokenklaw install all                  # Install into all supported runtimes
+tokenklaw activate on                   # Activate TokenKlaw
+tokenklaw activate off                  # Deactivate TokenKlaw
+tokenklaw activate stats                # Show activation state
+tokenklaw proxy [--port N]             # Start the TokenKlaw proxy server
 ```
 
-## Runtime Support Matrix
+### CLI Installation
 
-| Runtime | Status | Notes |
+After building from source:
+
+```bash
+pnpm install
+pnpm link
+tokenklaw doctor
+```
+
+## Supported Runtimes
+
+TokenKlaw is designed as a universal activation layer for AI coding agents. Claude Code is the first validated runtime; additional runtimes are in various stages of investigation and integration.
+
+### Runtime Status Legend
+
+- **Validated**: Tested and confirmed working in production
+- **Experimental**: Scaffolding generated, requires real-runtime validation
+- **Investigation**: Research in progress
+- **Scaffold**: Planned for future implementation
+
+### Current Runtime Matrix
+
+| Runtime | Status | Validation Level |
 | --- | --- | --- |
-| Claude Code | Working | Validated command activation, hook interception, state file, and `[TOKENKLAW]` statusline. |
-| Codex CLI | Experimental | Generates TokenKlaw activation artifacts and capability notes. |
-| Roo Code | Experimental | Generates skill/prompt/rules scaffolding. |
-| Cursor | Experimental | Generates prompt-injection style scaffolding. |
-| Cline | Experimental | Generates activation scaffolding. |
-| Continue | Experimental | Generates config-oriented activation notes. |
-| Gemini / Antigravity | Experimental | Generates prompt/context scaffolding. |
-| OpenClaw | Experimental | Includes SOUL/context compression and middleware notes. |
-| Hermes | Experimental | Includes startup context and memory compression notes. |
-| Windsurf | Scaffold | Future runtime target. |
-| OpenCode | Scaffold | Future runtime target. |
-| aider | Scaffold | Future runtime target. |
-| OpenDevin | Scaffold | Future runtime target. |
+| Claude Code | **Validated** | Full command activation, hook interception, state file, `[TOKENKLAW]` statusline |
+| Codex CLI | **Experimental** | Adapter scaffolding generated |
+| Roo Code | **Experimental** | Adapter scaffolding generated |
+| OpenClaw | **Investigation** | Research phase |
+| Hermes | **Investigation** | Research phase |
+| Gemini / Antigravity | **Investigation** | Research phase |
+| OpenCode | **Investigation** | Research phase |
+| Cursor | **Experimental** | Scaffolding generated |
+| Cline | **Experimental** | Scaffolding generated |
+| Continue | **Experimental** | Scaffolding generated |
+| Windsurf | **Scaffold** | Planned |
+| aider | **Scaffold** | Planned |
+| OpenDevin | **Scaffold** | Planned |
 
 ## Verification
 
@@ -254,15 +286,24 @@ claude plugin validate %USERPROFILE%\.claude --strict
 
 ## Troubleshooting
 
-### Logo is broken on GitHub
+### Logo stability
 
-The README uses a repository-relative image path:
+TokenKlaw keeps a canonical logo copy in the top-level `assets/` directory. This ensures consistent rendering across:
+
+- GitHub (raw URL)
+- Mobile GitHub
+- Forks
+- Social previews
+
+The canonical path is:
 
 ```text
-apps/site/public/tokenklaw-logo.png
+assets/tokenklaw-logo.png
 ```
 
-This avoids depending on an external image host. If the image does not appear on GitHub, confirm the file is committed and pushed to the `main` branch.
+Accessed via: `https://raw.githubusercontent.com/janpaul80/tokenklaw/main/assets/tokenklaw-logo.png`
+
+Secondary copies exist in `apps/site/public/` for the Vercel deployment.
 
 ### Claude commands do not appear
 
@@ -289,13 +330,48 @@ The state file is:
 
 Use Node 20 or 22 LTS and install Visual Studio Build Tools with Desktop development with C++.
 
-## Roadmap
+## Vision
 
-- Harden Claude Code demo and recording behavior.
-- Expand real-runtime validation for Cursor, Roo Code, Cline, Continue, Gemini, OpenClaw, and Hermes.
-- Publish a production npm package.
-- Add provider-level token accounting and cache-hit reporting.
-- Add repeatable integration tests for runtime installers.
+TokenKlaw is designed as a universal runtime activation and optimization layer for AI coding agents.
+
+### Target Ecosystem
+
+1. **Claude Code** (Validated)
+2. **OpenClaw** (Investigation)
+3. **Hermes** (Investigation)
+4. **Gemini / Antigravity** (Investigation)
+5. **OpenCode** (Investigation)
+6. **Roo** (Experimental)
+7. **Cursor** (Experimental)
+8. **Cline** (Experimental)
+9. **Continue** (Experimental)
+10. **Windsurf** (Scaffold)
+11. **aider** (Scaffold)
+12. **OpenDevin** (Scaffold)
+
+### Runtime Adapter Architecture
+
+Each runtime requires:
+
+- **Installation path**: Where to write activation artifacts
+- **Command interface**: How users invoke TokenKlaw
+- **Hook/middleware system**: For response interception
+- **State persistence**: Activation state storage
+- **Status reporting**: Visible state badge/indicator
+
+### Current Priorities
+
+1. Complete runtime investigations for OpenClaw, Hermes, Gemini, OpenCode
+2. Generate realistic capability assessments for each runtime
+3. Expand landing page with runtime matrix
+4. Publish first stable npm release
+
+### Long-Term Goals
+
+- Universal one-command install across all supported runtimes
+- Runtime-specific optimization profiles
+- Built-in token accounting per runtime
+- Cache intelligence that follows context across sessions
 
 ## License
 

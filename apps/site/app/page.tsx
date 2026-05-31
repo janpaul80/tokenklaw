@@ -4,12 +4,12 @@ import { MotionReveal } from "@/components/motion-reveal";
 import { Section } from "@/components/section";
 
 const runtimes = [
-  { name: "Claude Code", status: "Validated", detail: "Commands, hook interception, state, and statusline badge." },
-  { name: "Codex CLI", status: "Experimental", detail: "Activation artifact scaffold." },
-  { name: "Roo Code", status: "Experimental", detail: "Skill and prompt scaffold." },
-  { name: "Cursor", status: "Experimental", detail: "Prompt-injection scaffold." },
-  { name: "Cline", status: "Experimental", detail: "Activation scaffold." },
-  { name: "Gemini", status: "Experimental", detail: "Prompt/context scaffold." }
+  { name: "Claude Code", status: "Validated", detail: "Commands, hook interception, statusline badge, full activation." },
+  { name: "OpenClaw", status: "Investigation", detail: "Research phase – investigating hook system and config paths." },
+  { name: "Hermes", status: "Investigation", detail: "Research phase – investigating startup context and activation." },
+  { name: "Gemini / Antigravity", status: "Investigation", detail: "Research phase – investigating runtime architecture." },
+  { name: "OpenCode", status: "Investigation", detail: "Research phase – investigating activation design." },
+  { name: "Roo Code", status: "Experimental", detail: "Adapter scaffold generated." }
 ];
 
 const commands = [
@@ -58,11 +58,12 @@ export default function HomePage() {
           <MotionReveal delay={0.08} className="flex items-center justify-center">
             <div className="relative flex aspect-square w-full max-w-md items-center justify-center rounded-xl2 border border-line bg-panel p-8 shadow-soft">
               <Image
-                src="/tokenklaw-logo.png"
+                src="https://raw.githubusercontent.com/janpaul80/tokenklaw/main/assets/tokenklaw-logo.png"
                 alt="TokenKlaw logo"
                 width={420}
                 height={420}
                 className="h-full w-full object-contain"
+                unoptimized
                 priority
               />
             </div>
@@ -160,6 +161,33 @@ powershell -ExecutionPolicy Bypass -File .\\install.ps1 -Runtime claude`}
               <p className="mt-3 text-xs leading-5 text-muted">{runtime.detail}</p>
             </div>
           ))}
+        </div>
+      </Section>
+
+      <Section id="vision" title="Vision" subtitle="TokenKlaw is designed as a universal activation layer for AI coding agents, not just a Claude-only tool.">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-3 text-sm font-medium text-text">Target Ecosystem</p>
+            <div className="flex flex-wrap gap-2">
+              {["Claude Code", "OpenClaw", "Hermes", "Gemini", "OpenCode", "Roo", "Cursor", "Cline", "Continue", "Windsurf", "aider", "OpenDevin"].map((runtime) => (
+                <span key={runtime} className="rounded-full border border-line px-2 py-1 text-xs text-muted">
+                  {runtime}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-xl2 border border-line bg-panel p-5">
+            <p className="mb-3 text-sm font-medium text-text">Key Capabilities</p>
+            <ul className="space-y-2 text-xs text-muted">
+              <li>• One-command install per runtime</li>
+              <li>• Runtime activation commands</li>
+              <li>• Context reduction and compression</li>
+              <li>• Duplicate suppression</li>
+              <li>• Cache intelligence</li>
+              <li>• Status visibility (badges)</li>
+              <li>• Token accounting</li>
+            </ul>
+          </div>
         </div>
       </Section>
 
