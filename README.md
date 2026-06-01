@@ -235,32 +235,34 @@ tokenklaw doctor
 
 ## Supported Runtimes
 
-TokenKlaw is designed as a universal activation layer for AI coding agents. Claude Code is the first validated runtime; additional runtimes are in various stages of investigation and integration.
+TokenKlaw is designed as a universal activation layer for AI coding agents. Claude Code is the first validated runtime; additional runtimes are in various stages of validation and investigation.
 
 ### Runtime Status Legend
 
-- **Validated**: Tested and confirmed working in production
-- **Experimental**: Scaffolding generated, requires real-runtime validation
-- **Investigation**: Research in progress
+- **Validated**: Tested and confirmed working in production; artifacts are consumed at runtime
+- **Scaffolded**: TokenKlaw artifacts can be generated; runtime binary not found or consumption unproven
+- **Investigation**: Runtime exists (CLI/IDE); artifact generation or consumption not yet verified
 - **Scaffold**: Planned for future implementation
 
-### Current Runtime Matrix
+### Current Runtime Matrix (Evidence-Based)
 
-| Runtime | Status | Validation Level |
+| Runtime | Status | Evidence |
 | --- | --- | --- |
-| Claude Code | **Validated** | Full command activation, hook interception, state file, `[TOKENKLAW]` statusline |
-| OpenClaw | **Experimental (Scaffolded)** | Generates files to `~/.openclaw/tokenklaw/` — gap analysis needed to verify consumption |
-| Hermes | **Experimental (Scaffolded)** | Generates files to `~/.hermes/tokenklaw/` — gap analysis needed to verify consumption |
+| Claude Code | ✅ **Validated** | Full command activation, hook interception, state file, `[TOKENKLAW]` statusline |
+| OpenClaw | **Scaffolded** | Artifacts generated to clean-room; no runtime binary discovered |
+| Hermes | **Scaffolded** | Artifacts generated to clean-room; no runtime binary discovered |
+| Codex CLI | **Investigation** | CLI 0.130.0 runs under clean-room; plugin/config integration needed |
+| OpenCode | **Investigation** | CLI 1.15.13 runs under clean-room; plugin system available |
+| Cursor | **Investigation** | GUI IDE only; no CLI discovered |
+| Continue | **Investigation** | VS Code/JetBrains plugin; no standalone CLI |
+| Cline | **Investigation** | VS Code extension; no standalone CLI |
 | Gemini / Antigravity | **Investigation** | Research phase |
-| OpenCode | **Investigation** | Research phase |
-| Codex CLI | **Experimental** | Adapter scaffolding generated |
-| Roo Code | **Experimental** | Adapter scaffolding generated |
-| Cursor | **Experimental** | Scaffolding generated |
-| Cline | **Experimental** | Scaffolding generated |
-| Continue | **Experimental** | Scaffolding generated |
+| Roo Code | **Investigation** | Research phase |
 | Windsurf | **Scaffold** | Planned |
 | aider | **Scaffold** | Planned |
 | OpenDevin | **Scaffold** | Planned |
+
+See [`docs/RUNTIME-MATRIX.md`](docs/RUNTIME-MATRIX.md) for full evidence and validation methodology.
 
 ## Verification
 
@@ -334,20 +336,21 @@ Use Node 20 or 22 LTS and install Visual Studio Build Tools with Desktop develop
 
 TokenKlaw is designed as a universal runtime activation and optimization layer for AI coding agents.
 
-### Target Ecosystem
+### Target Ecosystem (Evidence-Based)
 
 1. **Claude Code** (Validated)
-2. **OpenClaw** (Investigation)
-3. **Hermes** (Investigation)
-4. **Gemini / Antigravity** (Investigation)
-5. **OpenCode** (Investigation)
-6. **Roo** (Experimental)
-7. **Cursor** (Experimental)
-8. **Cline** (Experimental)
-9. **Continue** (Experimental)
-10. **Windsurf** (Scaffold)
-11. **aider** (Scaffold)
-12. **OpenDevin** (Scaffold)
+2. **OpenCode** (Investigation — CLI found, next integration target)
+3. **Codex** (Investigation — CLI found, integration target)
+4. **OpenClaw** (Scaffolded — artifact generation confirmed)
+5. **Hermes** (Scaffolded — artifact generation confirmed)
+6. **Cursor** (Investigation — GUI only)
+7. **Continue** (Investigation — IDE plugin)
+8. **Cline** (Investigation — IDE plugin)
+9. **Gemini / Antigravity** (Investigation)
+10. **Roo** (Investigation)
+11. **Windsurf** (Scaffold)
+12. **aider** (Scaffold)
+13. **OpenDevin** (Scaffold)
 
 ### Runtime Adapter Architecture
 
@@ -361,9 +364,9 @@ Each runtime requires:
 
 ### Current Priorities
 
-1. Complete runtime investigations for OpenClaw, Hermes, Gemini, OpenCode
-2. Generate realistic capability assessments for each runtime
-3. Expand landing page with runtime matrix
+1. OpenCode integration — investigate plugin mechanism for TokenKlaw skill/rule loading
+2. Codex integration — investigate config schema for external skill loading
+3. Publish runtime matrix on landing page
 4. Publish first stable npm release
 
 ### Long-Term Goals
