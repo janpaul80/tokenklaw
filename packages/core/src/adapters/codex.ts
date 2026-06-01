@@ -19,7 +19,7 @@ const TOKENKLAW_SUBDIR = 'tokenklaw';
 export class CodexAdapter {
   readonly agent: 'codex' = 'codex';
   readonly name = 'Codex CLI';
-  readonly runtimeStatus: 'scaffolded' | 'investigation' | 'validated' = 'scaffolded';
+  readonly runtimeStatus: 'scaffolded' | 'investigation' | 'validated' = 'investigation';
 
   private get tokenklawDir(): string {
     return path.join(CODEX_CONFIG_DIR, TOKENKLAW_SUBDIR);

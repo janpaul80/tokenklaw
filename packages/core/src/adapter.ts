@@ -326,11 +326,11 @@ export const RUNTIME_ADAPTER_MATRIX: Record<AgentId, {
   },
   'codex': {
     label: 'Codex CLI',
-    runtimeStatus: 'scaffolded',
-    detectionPath: null,
+    runtimeStatus: 'investigation',
+    detectionPath: '~/.codex/',
     installTarget: '~/.codex/tokenklaw/',
     activationMechanism: 'config',
-    gaps: ['no detection verified', 'no activation mechanism'],
+    gaps: ['TokenKlaw writes to wrong path', 'Codex loads from ~/.codex/skills/', 'Need to verify consumption'],
   },
   'roo': {
     label: 'Roo Code',
