@@ -1,65 +1,180 @@
-# CodexAdapter Design
+# CodexAdapter Design - Updated
 
-**Status**: Investigation
-**Found**: Real runtime present with 62KB state
+**Status**: Design/Investigation  
+**Last Updated**: 2026-05-31
 
-## Current State
+## Problem
 
-| Item | Finding |
-|------|---------|
-| Directory | `~/.codex/` |
-| Files | 62KB+ state files (not TokenKlaw) |
-| Binary | Codex CLI |
-| TokenKlaw | NOT installed |
+TokenKlaw writes to: `~/.codex/tokenklaw/`  
+But Codex loads from: `~/.codex/skills/` and `~/.codex/rules/`
 
-## Discovery
+**No consumption** - installation path mismatch!
+
+## Current Discovery
+
+### Codex Loading Paths (from logs + file inspection)
+
+| Path | Purpose | Status |
+|------|--------|--------|
+| `~/.codex/skills/{name}/` | Custom skills | ✅ Codex loads |
+| `~/.codex/rules/default.rules` | Rules | ✅ Codex loads |
+| `~/.codex/tokenklaw/` | TokenKlaw target | ❌ NOT loaded |
+| `~/.codex/config.toml` | Config | ✅ Codex loads |
+
+### TokenKlaw Installation Paths (Current - WRONG!)
+
+```
+~/.codex/tokenklaw/
+  tokenklaw.rules.md          # Written here
+  tokenklaw.skill.md        # Written here
+  tokenklaw.prompt.md       # Written here
+  runtime-capabilities.json
+  runtime-notes.md
+```
+
+**This is wrong because Codex doesn't read from this path!**
+
+---
+
+## Correct Installation Targets
+
+### Option A: Skills Path
+
+**Path**: `~/.codex/skills/tokenklaw/`
+
+**Format**: 
+```
+~/.codex/skills/tokenklaw/
+  skill.md        # Main skill definition
+  prompts/       # Prompt templates
+  rules/         # Token rules
+  config.json    # Skill config
+```
+
+**Pros**:
+- Direct skill loading via Codex's skill mechanism
+- Well-documented
+
+**Cons**:
+- Need to understand Codex skill format
+
+### Option B: Rules Path
+
+**Path**: `~/.codex/rules/tokenklaw.rules`
+
+**Format**: Same as Codex default.rules format
+
+**Pros**:
+- Direct rule injection
+- Simple text-based
+
+**Cons**:
+- Need to understand Codex rules syntax
+
+### Option C: Plugin Path
+
+**Path**: `~/.codex/tokenklaw/codex-plugin/`
+
+**Pros**:
+- Full plugin capabilities
+- Can have prompts, hooks, etc.
+
+**Cons**:
+- More complex
+
+---
+
+## Migration Plan
+
+### Step 1: Modify Installation
+
+Change installer to write to correct paths:
+
+```typescript
+// Current (WRONG)
+const target = '~/.codex/tokenklaw/';
+
+// Correct Option A (Skills)
+const targetSkill = '~/.codex/skills/tokenklaw/';
+const targetRules = '~/.codex/rules/tokenklaw.rules';
+```
+
+### Step 2: Maintain Backward Compatibility
+
+Keep old path for detection but add new paths:
 
 ```
 ~/.codex/
-  .codex-global-state.json      (62KB)
-  .codex-global-state.json.bak  (62KB)
-  .personality_migration
-  .sandbox/
-  .sandbox-bin/
-  .sandbox-secrets/
-  .tmp/
+  tokenklaw/                    # Old (keep for detection)
+    runtime-capabilities.json   # Keep for detection
+  skills/
+    tokenklaw/              # NEW - actual consumption
+  rules/
+    tokenklaw.rules        # NEW - actual consumption
 ```
 
-## Gap Analysis
+---
 
-| Requirement | Status |
-|--------------|--------|
-| Codex runtime | ✅ EXISTS |
-| TokenKlaw target | ❌ NOT configured |
-| Installation | Needed |
-| Consumption | Not tested |
+## Validation Requirements
 
-## Design (When Enabled)
+To move from Investigation → Scaffolded → Validated:
 
-```typescript
-class CodexAdapter implements RuntimeAdapter {
-  readonly agent = 'codex';
-  readonly name = 'Codex CLI';
-  readonly runtimeStatus: 'scaffolded' = 'scaffolded';
+### Investigation (Current)
+- [x] Runtime exists
+- [x] Skills mechanism discovered
+- [x] Rules mechanism discovered
+- [x] Wrong installation path identified
 
-  async detect(): Promise<boolean> {
-    // Check for .codex directory
-    return fs.existsSync(path.join(os.homedir(), '.codex'));
-  }
+### Scaffolded (Target)
+- [ ] TokenKlaw writes to correct skills path
+- [ ] TokenKlaw writes to correct rules path
+- [ ] Files verified in correct locations
+- [ ] Codex can detect custom skills
 
-  async install(): Promise<InstallResult> {
-    // Install TokenKlaw to .codex/
-  }
+### Validated (Goal)
+- [ ] Codex loads skill from ~/.codex/skills/tokenklaw/
+- [ ] Codex applies rules from ~/.codex/rules/tokenklaw.rules
+- [ ] Behavior changes when enabled/disabled
+- [ ] Command recognition works
 
-  async validate(): Promise<ValidationResult> {
-    // Current: Files exist
-    // Need: Prove Codex reads them
-  }
-}
-```
+---
 
-## Recommendation
+## Pass/Fail Criteria
 
-1. Add Codex as TokenKlaw target (it exists!)
-2. Run install
-3. Verify consumption in Codex CLI
+**PASS** (Move to Scaffolded):
+- [ ] TokenKlaw installs to ~.codex/skills/tokenklaw/
+- [ ] Files exist in correct location
+- [ ] Codex detects custom skill
+
+**FAIL** (Remain Investigation):
+- [ ] Cannot modify installer
+- [ ] Codex doesn't load from new paths
+- [ ] No skill format documentation
+
+---
+
+## Recommended Implementation
+
+**Option A** (Skills path):
+
+1. Change CodexInstaller to write to `~/.codex/skills/tokenklaw/`
+2. Add skill.md with token budget rules
+3. Test with Codex CLI
+
+**Why**: Direct integration, Codex already has skills loader
+
+---
+
+## Current Status
+
+**Codex**: Investigation
+
+**Next**: If design approved → Modify installer → Move to Scaffolded
+
+---
+
+## References
+
+- `.codex/skills/.system/` - Existing skills
+- `.codex/rules/default.rules` - Rules format (75KB)
+- `config.toml` - Plugin/config format
