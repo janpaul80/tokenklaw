@@ -22,8 +22,8 @@
 | Claude Code | ✅ Validated | Yes | Yes | Native plugin system; skills/rules loaded via Claude Code plugin |
 | **OpenClaw** | Scaffolded | No | Yes | No | CLI artifacts generated to clean-room; no runtime binary found |
 | **Hermes** | Scaffolded | No | Yes | No | CLI artifacts generated; no runtime binary found |
-| **Codex** | Investigation | Yes (0.130.0) | Yes | CLI runs under clean-room; needs plugin/config integration |
-| **OpenCode** | Investigation | Yes (1.15.13) | Yes | CLI runs under clean-room; needs plugin/config integration |
+| **Codex** | Scaffolded | Yes (0.130.0) | Yes | MCP server registered via codex mcp add; tool calls require interactive session |
+| **OpenCode** | Scaffolded | Yes (1.15.13) | Yes | SKILL.md discovered and loaded via opencode debug skill |
 | **Cursor** | Investigation | No (GUI) | Yes | No CLI; GUI IDE only |
 | **Continue** | Investigation | No (IDE ext) | Yes | IDE plugin only; no standalone CLI |
 | **Cline** | Investigation | No (IDE ext) | Yes | IDE plugin only; no standalone CLI |
