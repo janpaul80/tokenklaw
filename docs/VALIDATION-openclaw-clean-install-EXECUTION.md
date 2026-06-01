@@ -5,24 +5,24 @@ Date: 2026-05-31
 Owner: Paul Hartmann / TokenKlaw
 
 ## Purpose
-Provide a safe, reproducible plan to verify whether OpenClaw consumes TokenKlaw artifacts written to a user profile, **without touching the personal OpenClaw folder (C:\Users\hartm.openclaw)**.
+Provide a safe, reproducible plan to verify whether OpenClaw consumes TokenKlaw artifacts written to a user profile, **without touching the personal OpenClaw folder (C:\Users\hartm\.openclaw)**.
 
 ## Clean test path
 ```
-C:\Users\hartm.openclaw-tk-test
+C:\Users\hartm\.openclaw-tk-test
 ```
 
 ## High‑Level Plan
 1. **Isolated Environment Setup**  
    - Create clean directory path shown above.  
    - Set environment variable `OPENCLAW_HOME` (or equivalent) to this path for all test commands.  
-   - Never read or write to `C:\Users\hartm.openclaw`.
+   - Never read or write to `C:\Users\hartm\.openclaw`.
 
 2. **Runtime Installation / Invocation**  
    - Install or launch OpenClaw with configuration pointing to the clean test path.  
    - Example PowerShell session:  
      ```powershell
-     $env:OPENCLAW_HOME = 'C:\Users\hartm.openclaw-tk-test'
+     $env:OPENCLAW_HOME = 'C:\Users\hartm\.openclaw-tk-test'
      & 'C:\Path\To\openclaw.exe' --version
      & 'C:\Path\To\openclaw.exe' skills list
      ```  
@@ -41,12 +41,12 @@ C:\Users\hartm.openclaw-tk-test
 5. **Evidence Collection**
    - CLI outputs (stdout + stderr)
    - Logs from `.../log/`
-   - Filesystem snapshot of `C:\Users\hartm.openclaw-tk-test`
+   - Filesystem snapshot of `C:\Users\hartm\.openclaw-tk-test`
    - Environment summary (any created configs)
 
 6. **Consumption Proof Criteria**
    - CLI or log references to `test-tokenklaw-clean` skill or rules file
-   - Loading of user skills/rules from `...openclaw-tk-test`
+   - Loading of user skills/rules from `...\.openclaw-tk-test`
 
 7. **Pass / Fail Conditions**
    | Outcome | Criteria |
@@ -67,8 +67,8 @@ C:\Users\hartm.openclaw-tk-test
    - Commit + push to repo.
 
 ## Guardrails
-- No destructive actions outside `C:\Users\hartm.openclaw-tk-test`
-- Never modify `C:\Users\hartm.openclaw`
+- No destructive actions outside `C:\Users\hartm\.openclaw-tk-test`
+- Never modify `C:\Users\hartm\.openclaw`
 - Stop for approval if elevation or system change becomes necessary
 - All steps occur under a non‑interactive isolated test environment
 
