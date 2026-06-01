@@ -1,0 +1,2 @@
+"C:\Users\hartm\AppData\Roaming\npm\codex.ps1" 
+(CODEX_HOME=C:\Users\hartm\.codex-tk-test)

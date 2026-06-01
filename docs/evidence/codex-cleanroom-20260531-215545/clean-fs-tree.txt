@@ -1,0 +1,10 @@
+
+FullName                                                           Length LastWriteTime
+--------                                                           ------ -------------
+C:\Users\hartm\.codex-tk-test\rules                                       5/31/2026 9:55:45 PM
+C:\Users\hartm\.codex-tk-test\skills                                      5/31/2026 9:55:45 PM
+C:\Users\hartm\.codex-tk-test\rules\test-tokenklaw-clean.rules     290    5/31/2026 9:55:45 PM
+C:\Users\hartm\.codex-tk-test\skills\test-tokenklaw-clean                 5/31/2026 9:55:45 PM
+C:\Users\hartm\.codex-tk-test\skills\test-tokenklaw-clean\SKILL.md 237    5/31/2026 9:55:45 PM
+
+

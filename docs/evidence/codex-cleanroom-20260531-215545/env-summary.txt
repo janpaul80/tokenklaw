@@ -1,0 +1,3 @@
+CODEX_HOME=C:\Users\hartm\.codex-tk-test
+codex.exe path: 
+C:\Users\hartm\AppData\Roaming\npm\codex.ps1
