@@ -248,14 +248,14 @@ TokenKlaw is designed as a universal activation layer for AI coding agents. Clau
 
 | Runtime | Status | Evidence |
 | --- | --- | --- |
-| Claude Code | ✅ **Validated** | Full command activation, hook interception, state file, `[TOKENKLAW]` statusline |
-| OpenClaw | **Scaffolded** | Artifacts generated to clean-room; no runtime binary discovered |
-| Hermes | **Scaffolded** | Artifacts generated to clean-room; no runtime binary discovered |
-| Codex CLI | **Investigation** | CLI 0.130.0 runs under clean-room; plugin/config integration needed |
-| OpenCode | **Investigation** | CLI 1.15.13 runs under clean-room; plugin system available |
-| Cursor | **Investigation** | GUI IDE only; no CLI discovered |
-| Continue | **Investigation** | VS Code/JetBrains plugin; no standalone CLI |
-| Cline | **Investigation** | VS Code extension; no standalone CLI |
+| Claude Code | ✅ **Validated** | Full command activation, hook interception, `[TOKENKLAW]` statusline |
+| OpenCode | ✅ **Validated** | SKILL.md loaded via `opencode debug skill` |
+| Codex | **Scaffolded** | MCP server registered, protocol validated |
+| OpenClaw | **Scaffolded** | Artifacts generated to clean-room |
+| Hermes | **Scaffolded** | Artifacts generated |
+| Cursor | **Investigation** | GUI IDE only |
+| Continue | **Investigation** | IDE plugin |
+| Cline | **Investigation** | IDE extension |
 | Gemini / Antigravity | **Investigation** | Research phase |
 | Roo Code | **Investigation** | Research phase |
 | Windsurf | **Scaffold** | Planned |
@@ -338,14 +338,14 @@ TokenKlaw is designed as a universal runtime activation and optimization layer f
 
 ### Target Ecosystem (Evidence-Based)
 
-1. **Claude Code** (Validated)
-2. **OpenCode** (Investigation — CLI found, next integration target)
-3. **Codex** (Investigation — CLI found, integration target)
-4. **OpenClaw** (Scaffolded — artifact generation confirmed)
-5. **Hermes** (Scaffolded — artifact generation confirmed)
-6. **Cursor** (Investigation — GUI only)
-7. **Continue** (Investigation — IDE plugin)
-8. **Cline** (Investigation — IDE plugin)
+1. **Claude Code** (Validated ✅)
+2. **OpenCode** (Validated ✅ — SKILL.md loaded)
+3. **Codex** (Scaffolded — MCP protocol validated)
+4. **OpenClaw** (Scaffolded — artifact gen)
+5. **Hermes** (Scaffolded — artifact gen)
+6. **Cursor** (Investigation)
+7. **Continue** (Investigation)
+8. **Cline** (Investigation)
 9. **Gemini / Antigravity** (Investigation)
 10. **Roo** (Investigation)
 11. **Windsurf** (Scaffold)
