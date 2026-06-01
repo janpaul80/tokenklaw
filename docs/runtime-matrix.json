@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TokenKlaw Runtime Compatibility Matrix",
+  "description": "Evidence-based runtime compatibility status for TokenKlaw",
+  "version": "1.0.0",
+  "lastUpdated": "2026-06-01T03:15:00Z",
+  "statusLevels": {
+    "validated": {
+      "description": "Runtime is confirmed to load/consume TokenKlaw artifacts (skills, rules, middleware) at runtime",
+      "evidence": [
+        "Runtime loads TokenKlaw skills/rules",
+        "Runtime executes TokenKlaw commands",
+        "Status badge visible in runtime"
+      ]
+    },
+    "scaffolded": {
+      "description": "TokenKlaw artifacts can be generated for this runtime; integration proven at protocol/infrastructure level",
+      "evidence": [
+        "Artifact generation works",
+        "Integration mechanism (MCP/SKILL) verified",
+        "Protocol communication tested"
+      ]
+    },
+    "investigation": {
+      "description": "Runtime exists but artifact generation or consumption not yet verified",
+      "evidence": [
+        "CLI found",
+        "Research phase"
+      ]
+    }
+  },
+  "runtimes": [
+    {
+      "name": "Claude Code",
+      "status": "validated",
+      "cli": true,
+      "version": "latest",
+      "evidence": "Native plugin system; skills/rules loaded via Claude Code plugin",
+      "lastVerified": "2026-05-15",
+      "integrationPath": "plugin"
+    },
+    {
+      "name": "OpenCode",
+      "status": "validated",
+      "cli": true,
+      "version": "1.15.13",
+      "evidence": "SKILL.md loaded via opencode debug skill",
+      "lastVerified": "2026-06-01",
+      "integrationPath": "skill"
+    },
+    {
+      "name": "Codex",
+      "status": "scaffolded",
+      "cli": true,
+      "version": "0.130.0",
+      "evidence": "MCP server registered; protocol validated via JSON-RPC",
+      "lastVerified": "2026-06-01",
+      "integrationPath": "mcp",
+      "note": "Awaiting runtime invocation proof"
+    },
+    {
+      "name": "OpenClaw",
+      "status": "scaffolded",
+      "cli": false,
+      "evidence": "CLI artifacts generated to clean-room",
+      "lastVerified": "2026-05-31",
+      "integrationPath": "install"
+    },
+    {
+      "name": "Hermes",
+      "status": "scaffolded",
+      "cli": false,
+      "evidence": "CLI artifacts generated",
+      "lastVerified": "2026-05-31",
+      "integrationPath": "install"
+    },
+    {
+      "name": "Cursor",
+      "status": "investigation",
+      "cli": false,
+      "evidence": "GUI IDE only",
+      "lastVerified": "2026-06-01"
+    },
+    {
+      "name": "Continue",
+      "status": "investigation",
+      "cli": false,
+      "evidence": "VS Code/JetBrains plugin",
+      "lastVerified": "2026-06-01"
+    },
+    {
+      "name": "Cline",
+      "status": "investigation",
+      "cli": false,
+      "evidence": "VS Code extension",
+      "lastVerified": "2026-06-01"
+    }
+  ]
+}
