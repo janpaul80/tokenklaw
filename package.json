@@ -16,7 +16,9 @@
     "doctor": "pnpm --filter @tokenklaw/cli doctor",
     "inspect": "pnpm --filter @tokenklaw/cli inspect",
     "stats": "pnpm --filter @tokenklaw/cli stats",
-    "proxy": "pnpm --filter @tokenklaw/cli proxy"
+    "proxy": "pnpm --filter @tokenklaw/cli proxy",
+    "benchmark": "node scripts/benchmark.cjs",
+    "benchmark:json": "node scripts/benchmark.cjs --json"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
