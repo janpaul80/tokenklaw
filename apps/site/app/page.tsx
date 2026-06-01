@@ -4,12 +4,19 @@ import { MotionReveal } from "@/components/motion-reveal";
 import { Section } from "@/components/section";
 
 const runtimes = [
-  { name: "Claude Code", status: "Validated", detail: "Commands, hook interception, statusline badge, full activation." },
-  { name: "OpenClaw", status: "Experimental", detail: "SOUL integration, middleware compression, activation state." },
-  { name: "Hermes", status: "Experimental", detail: "Startup context, memory compression, long-lived session optimization." },
-  { name: "Gemini / Antigravity", status: "Investigation", detail: "Research phase – researching integration possibilities." },
-  { name: "OpenCode", status: "Investigation", detail: "Research phase – researching configuration approaches." },
-  { name: "Roo Code", status: "Experimental", detail: "Adapter scaffold generated." }
+  { name: "Claude Code", status: "✅ Validated", detail: "Full command activation, hook interception, statusline badge." },
+  { name: "OpenClaw", status: "Scaffolded", detail: "Artifacts generated; no runtime binary found." },
+  { name: "Hermes", status: "Scaffolded", detail: "Artifacts generated; no runtime binary found." },
+  { name: "OpenCode", status: "Investigation", detail: "CLI 1.15.13 found; plugin integration next." },
+  { name: "Codex", status: "Investigation", detail: "CLI 0.130.0 found; config integration next." },
+  { name: "Cursor", status: "Investigation", detail: "GUI IDE only; no CLI." },
+  { name: "Continue", status: "Investigation", detail: "IDE plugin; no standalone CLI." },
+  { name: "Cline", status: "Investigation", detail: "IDE plugin; no standalone CLI." },
+  { name: "Gemini / Antigravity", status: "Investigation", detail: "Research phase." },
+  { name: "Roo Code", status: "Investigation", detail: "Research phase." },
+  { name: "Windsurf", status: "Scaffold", detail: "Planned." },
+  { name: "aider", status: "Scaffold", detail: "Planned." },
+  { name: "OpenDevin", status: "Scaffold", detail: "Planned." }
 ];
 
 const commands = [
@@ -148,7 +155,7 @@ powershell -ExecutionPolicy Bypass -File .\\install.ps1 -Runtime claude`}
         </div>
       </Section>
 
-      <Section id="runtimes" title="Runtime Coverage" subtitle="Claude Code is validated first; additional runtimes keep explicit experimental/scaffold status until proven in their real environments.">
+      <Section id="runtimes" title="Runtime Coverage" subtitle="Evidence-based status: Validated (consumption proven), Scaffolded (artifacts generated), Investigation (research in progress).">
         <div className="grid gap-3 md:grid-cols-3">
           {runtimes.map((runtime) => (
             <div key={runtime.name} className="rounded-xl2 border border-line bg-panel p-4">
