@@ -127,15 +127,32 @@ pnpm benchmark compare
 2. **Line Deduplication** - Replace repeated lines with references
 3. **Keyword Compression** - Shorten common keywords (function → fn, const → c)
 
-### v1.3 Results (with Phrase Normalization)
+### v1.3 Results (CORRECTED - Safe Rules Only)
 
 | Scenario | Original | Compressed | Reduction | PhraseNorm |
 |----------|----------|------------|-----------|-----------|
-| Small | 86 | 66 | 23.3% | 59 chars |
+| Small | 86 | 75 | 12.8% | 0 chars |
 | Medium | 134 | 120 | 10.4% | 0 chars |
-| Large | 339 | 260 | 23.3% | 246 chars |
-| Multi-file | 308 | 269 | 12.7% | 141 chars |
-| History | 189 | 135 | 28.6% | 189 chars |
+| Large | 339 | 296 | 12.7% | 0 chars |
+| Multi-file | 308 | 280 | 9.1% | 21 chars |
+| History | 189 | 177 | 6.3% | 20 chars |
+
+### v1.3 Results (UNSAFE - Invalidated)
+
+> ⚠️ These results were produced by destructive rules that deleted semantics. Do not use.
+
+| Scenario | Original | Compressed | Reduction | Semantic Loss |
+|----------|----------|------------|-----------|-------------|
+| Small | 86 | 66 | 23.3% | 59 chars deleted |
+| Medium | 134 | 120 | 10.4% | 0 chars |
+| Large | 339 | 260 | 23.3% | 246 chars deleted |
+| Multi-file | 308 | 269 | 12.7% | 141 chars deleted |
+| History | 189 | 135 | 28.6% | **168 chars deleted** |
+
+**Unsafe rules removed:**
+- `[/\/\/ System: [^\n]+\n/g, '']` - deleted system instructions
+- `[/\/\/ [^\n]+ - same pattern/gi, '// same pattern']` - deleted file context
+- `/function (create|get|update|...)/g` - mangled signatures
 
 ### v1.2 Baseline (before Phrase Normalization)
 
@@ -147,15 +164,15 @@ pnpm benchmark compare
 | Multi-file | 308 | 285 | 7.5% |
 | History | 189 | 182 | 3.7% |
 
-### Delta (v1.2 → v1.3)
+### Delta (v1.2 → v1.3 Corrected)
 
-| Scenario | Before | After | Delta |
-|----------|--------|-------|-------|
-| Small | 12.8% | 23.3% | +10.5% |
-| Medium | 10.4% | 10.4% | 0% |
-| Large | 12.7% | 23.3% | +10.6% |
-| Multi-file | 7.5% | 12.7% | +5.2% |
-| History | 3.7% | 28.6% | +24.9% |
+| Scenario | Baseline | Corrected | Delta | Notes |
+|----------|----------|-----------|-------|-------|
+| Small | 12.8% | 12.8% | 0% | No matching phrases |
+| Medium | 10.4% | 10.4% | 0% | No matching phrases |
+| Large | 12.7% | 12.7% | 0% | No matching phrases |
+| Multi-file | 7.5% | 9.1% | **+1.6%** | "same pattern" → "same pattern" |
+| History | 3.7% | 6.3% | **+2.6%** | "Previous:" → "Prev:" |
 
 ---
 

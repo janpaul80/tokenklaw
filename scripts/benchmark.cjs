@@ -40,22 +40,21 @@ function countTokens(text) {
 
 /**
  * Phrase Normalization - Safe text-pattern replacements
- * Reduces repeated prompt wording without fragile template matching.
+ *
+ * RULES:
+ * - NEVER delete instructions or system messages
+ * - NEVER delete code comments unless proven redundant
+ * - Only safe substitutions that preserve meaning
  */
 const PHRASE_NORMALIZATIONS = [
-  // Common prompt phrases → short forms
+  // Safe substitutions only - no deletions
   [/Previous:/g, 'Prev:'],
   [/Current request:/g, 'Current:'],
-  [/User asks about/gi, 'User asked:'],
-  [/Assistant explained/gi, 'Assistant:'],
-  [/Please analyze/gi, 'Analyze'],
+  [/User wants me to/gi, 'User asked:'],
+  [/Please analysis/gi, 'Analyze'],
+  [/Please review/gi, 'Review'],
   [/Return suggestions as a bullet list/gi, 'Return bullets'],
   [/Identify the duplication and suggest refactoring/gi, 'Find duplication + refactor'],
-  [/Review and suggest improvements/gi, 'Review + suggest'],
-  [/Analyze and optimize the patterns/gi, 'Analyze + optimize'],
-  [/function (?:create|get|update|delete|find|list)\w+\([^\)]*\)/g, 'fn dbOp(...)'], // Generic db ops
-  [/\/\/ System: [^\n]+\n/g, ''], // Remove redundant system comments
-  [/\/\/ [^\n]+ - same pattern/gi, '// same pattern'],
 ];
 
 function normalizePhrases(text) {
