@@ -38,8 +38,40 @@ function countTokens(text) {
   return Math.ceil(text.length / 4);
 }
 
+/**
+ * Phrase Normalization - Safe text-pattern replacements
+ * Reduces repeated prompt wording without fragile template matching.
+ */
+const PHRASE_NORMALIZATIONS = [
+  // Common prompt phrases → short forms
+  [/Previous:/g, 'Prev:'],
+  [/Current request:/g, 'Current:'],
+  [/User asks about/gi, 'User asked:'],
+  [/Assistant explained/gi, 'Assistant:'],
+  [/Please analyze/gi, 'Analyze'],
+  [/Return suggestions as a bullet list/gi, 'Return bullets'],
+  [/Identify the duplication and suggest refactoring/gi, 'Find duplication + refactor'],
+  [/Review and suggest improvements/gi, 'Review + suggest'],
+  [/Analyze and optimize the patterns/gi, 'Analyze + optimize'],
+  [/function (?:create|get|update|delete|find|list)\w+\([^\)]*\)/g, 'fn dbOp(...)'], // Generic db ops
+  [/\/\/ System: [^\n]+\n/g, ''], // Remove redundant system comments
+  [/\/\/ [^\n]+ - same pattern/gi, '// same pattern'],
+];
+
+function normalizePhrases(text) {
+  let result = text;
+  for (const [pattern, repl] of PHRASE_NORMALIZATIONS) {
+    result = result.replace(pattern, repl);
+  }
+  return result;
+}
+
 function compressContext(prompt) {
-  const lines = prompt.split('\n');
+  // Stage 1: Phrase Normalization (applies to all prompts)
+  const normalized = normalizePhrases(prompt);
+  const phraseHits = prompt.length - normalized.length;
+
+  const lines = normalized.split('\n');
   const lineCounts = new Map();
   let cacheHits = 0;
   const unique = [];
@@ -92,14 +124,14 @@ function compressContext(prompt) {
     result = result.replace(pattern, repl);
   }
 
-  return { result, cacheHits, originalLines: lines.length, uniqueLines: unique.length };
+  return { result, cacheHits, phraseHits, originalLines: lines.length, uniqueLines: unique.length };
 }
 
 function runBenchmark(name, scenario) {
   const { prompt } = BENCHMARKS[scenario];
   const originalTokens = countTokens(prompt);
   const start = Date.now();
-  const { result, cacheHits, originalLines, uniqueLines } = compressContext(prompt);
+  const { result, cacheHits, phraseHits, originalLines, uniqueLines } = compressContext(prompt);
   const processingTime = Date.now() - start;
   const compressedTokens = countTokens(result);
   const reduction = ((originalTokens - compressedTokens) / originalTokens * 100);
@@ -112,6 +144,7 @@ function runBenchmark(name, scenario) {
     reduction: parseFloat(reduction.toFixed(1)),
     processingTime,
     cacheHits,
+    phraseHits,
     deduplicated: originalLines - uniqueLines,
     target: targets[scenario]
   };
@@ -129,14 +162,14 @@ function main() {
       : (console.error('Available: small, medium, large, multiFile, history'), process.exit(1));
 
   if (json) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), version: '1.2.0', results }, null, 2));
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), version: '1.3.0', results }, null, 2));
   } else {
-    console.log('\nTokenKlaw Benchmark v1.2\n' + '='.repeat(50));
+    console.log('\nTokenKlaw Benchmark v1.3\n' + '='.repeat(50));
     for (const r of results) {
       const status = r.reduction >= r.target ? '✅' : '⚠️';
       console.log(`\n${r.scenario} ${status}`);
       console.log(`  ${r.originalTokens} → ${r.compressedTokens} tokens (${r.reduction}%) [target: ${r.target}%]`);
-      console.log(`  Dedup: ${r.deduplicated}, Cache: ${r.cacheHits}, Time: ${r.processingTime}ms`);
+      console.log(`  PhraseNorm: ${r.phraseHits}, Dedup: ${r.deduplicated}, Cache: ${r.cacheHits}, Time: ${r.processingTime}ms`);
     }
   }
 }

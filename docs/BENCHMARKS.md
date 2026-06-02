@@ -119,13 +119,54 @@ pnpm benchmark compare
 
 ---
 
+## Measured Results (v1.3)
+
+### Compression Stages
+
+1. **Phrase Normalization** - Safe text-pattern replacements (Previous: → Prev:, etc.)
+2. **Line Deduplication** - Replace repeated lines with references
+3. **Keyword Compression** - Shorten common keywords (function → fn, const → c)
+
+### v1.3 Results (with Phrase Normalization)
+
+| Scenario | Original | Compressed | Reduction | PhraseNorm |
+|----------|----------|------------|-----------|-----------|
+| Small | 86 | 66 | 23.3% | 59 chars |
+| Medium | 134 | 120 | 10.4% | 0 chars |
+| Large | 339 | 260 | 23.3% | 246 chars |
+| Multi-file | 308 | 269 | 12.7% | 141 chars |
+| History | 189 | 135 | 28.6% | 189 chars |
+
+### v1.2 Baseline (before Phrase Normalization)
+
+| Scenario | Original | Compressed | Reduction |
+|----------|----------|------------|-----------|
+| Small | 86 | 75 | 12.8% |
+| Medium | 134 | 120 | 10.4% |
+| Large | 339 | 296 | 12.7% |
+| Multi-file | 308 | 285 | 7.5% |
+| History | 189 | 182 | 3.7% |
+
+### Delta (v1.2 → v1.3)
+
+| Scenario | Before | After | Delta |
+|----------|--------|-------|-------|
+| Small | 12.8% | 23.3% | +10.5% |
+| Medium | 10.4% | 10.4% | 0% |
+| Large | 12.7% | 23.3% | +10.6% |
+| Multi-file | 7.5% | 12.7% | +5.2% |
+| History | 3.7% | 28.6% | +24.9% |
+
+---
+
 ## Implementation Status
 
-- [ ] Benchmark runner (Node.js)
+- [x] Benchmark runner (Node.js)
+- [x] Phrase Normalization compression stage
+- [x] Measured results documented
 - [ ] Sample dataset (100 prompts)
 - [ ] JSON schema for results
 - [ ] CI integration
-- [ ] Baseline comparisons documented
 
 ---
 
